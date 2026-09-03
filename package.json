@@ -1,0 +1,31 @@
+{
+  "name": "tavolyn",
+  "private": true,
+  "workspaces": [
+    "tavolyn-node",
+    "tavolyn-qwik"
+  ],
+  "engines": {
+    "node": "22.16.0",
+    "npm": "10.9.2"
+  },
+  "overrides": {
+    "@angular-devkit/core": "21.2.23",
+    "@angular-devkit/schematics": "21.2.23",
+    "@angular-devkit/schematics-cli": "21.2.23",
+    "@nestjs/mau": {
+      "inquirer": "8.2.7",
+      "undici": "6.28.0"
+    },
+    "@vitest/browser": "4.1.11",
+    "@vitest/browser-playwright": "4.1.11",
+    "@vitest/browser-preview": "4.1.11",
+    "@vitest/browser-webdriverio": "4.1.11",
+    "@vitest/coverage-istanbul": "4.1.11",
+    "@vitest/coverage-v8": "4.1.11",
+    "@vitest/ui": "4.1.11",
+    "picomatch": "4.0.7",
+    "vite-imagetools": "10.0.1",
+    "vitest": "4.1.11"
+  }
+}
