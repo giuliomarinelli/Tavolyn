@@ -7,6 +7,11 @@
 # Development
 node_modules
 .env
+.env.*
+.dev.vars
+.dev.vars.*
+.wrangler/
+coverage/
 *.local
 
 # Cache

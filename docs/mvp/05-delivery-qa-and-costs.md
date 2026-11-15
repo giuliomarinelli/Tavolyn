@@ -1,6 +1,11 @@
 # 05 — Verification, deployment, free-tier and demo safety gates
 
 ## Local quality gates (each task)
+Bootstrap command: `npm ci` then `npm run check` at repository root. This builds
+the Qwik Worker, validates the Wrangler bundle without deploying, and tests the
+compiled application in local workerd. See [setup](../../README.md) and
+[TAV-MVP-01 evidence and residual risks](./TAV-MVP-01.md).
+
 Codex should define real package scripts, then run:
 - npm ci (for lockfile or dependency work)
 - npm run typecheck / build / lint / test (matching actual scripts)

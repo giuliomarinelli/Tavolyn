@@ -4,10 +4,7 @@
  * SSR entry point, in all cases the application is rendered outside the browser, this
  * entry point will be the common one.
  *
- * - Server (express, cloudflare...)
- * - npm run start
- * - npm run preview
- * - npm run build
+ * Shared by the Cloudflare Worker and the optional Vite authoring server.
  *
  */
 import {
@@ -21,7 +18,7 @@ export default function (opts: RenderToStreamOptions) {
     ...opts,
     // Use container attributes to set attributes on the html tag.
     containerAttributes: {
-      lang: "en-us",
+      lang: "it",
       ...opts.containerAttributes,
     },
     serverData: {

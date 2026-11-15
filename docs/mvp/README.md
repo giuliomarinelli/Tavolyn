@@ -46,7 +46,10 @@ Some of these are important long-term Tavolyn requirements; they are **not failu
 - [05 — Delivery, QA and cost gates](./05-delivery-qa-and-costs.md)
 
 ## Repo baseline
-The existing root npm workspaces are tavolyn-node (unused Nest 12 starter) and tavolyn-qwik (Qwik 1.20 starter). Work order TAV-MVP-01 removes the unused Nest starter and adjusts workspaces/lockfile. Preserve Qwik project and actual dependency compatibility.
+TAV-MVP-01 preserves `tavolyn-qwik` (Qwik/Qwik City 1.20.0) as the only npm
+workspace and removes the unused Nest starter completely. Pages and API route
+handlers run in one Cloudflare Worker. See the [local setup](../../README.md)
+and [TAV-MVP-01 implementation report](./TAV-MVP-01.md).
 
 ## Source references
 - Qwik Workers adapter: https://qwik.dev/docs/deployments/cloudflare-workers/

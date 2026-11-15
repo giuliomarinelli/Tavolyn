@@ -2,30 +2,27 @@
   "name": "tavolyn",
   "private": true,
   "workspaces": [
-    "tavolyn-node",
     "tavolyn-qwik"
   ],
+  "scripts": {
+    "dev": "npm run dev --workspace tavolyn-qwik",
+    "dev:vite": "npm run dev:vite --workspace tavolyn-qwik",
+    "preview": "npm run preview --workspace tavolyn-qwik",
+    "typecheck": "npm run typecheck --workspace tavolyn-qwik",
+    "lint": "npm run lint --workspace tavolyn-qwik",
+    "test": "npm run test --workspace tavolyn-qwik",
+    "build": "npm run build --workspace tavolyn-qwik",
+    "cf-typegen": "npm run cf-typegen --workspace tavolyn-qwik",
+    "benchmark": "npm run benchmark --workspace tavolyn-qwik",
+    "check": "npm run typecheck && npm run lint && npm run build && npm test"
+  },
   "engines": {
     "node": "22.16.0",
     "npm": "10.9.2"
   },
   "overrides": {
-    "@angular-devkit/core": "21.2.23",
-    "@angular-devkit/schematics": "21.2.23",
-    "@angular-devkit/schematics-cli": "21.2.23",
-    "@nestjs/mau": {
-      "inquirer": "8.2.7",
-      "undici": "6.28.0"
-    },
-    "@vitest/browser": "4.1.11",
-    "@vitest/browser-playwright": "4.1.11",
-    "@vitest/browser-preview": "4.1.11",
-    "@vitest/browser-webdriverio": "4.1.11",
-    "@vitest/coverage-istanbul": "4.1.11",
-    "@vitest/coverage-v8": "4.1.11",
-    "@vitest/ui": "4.1.11",
+    "vite": "7.3.8",
     "picomatch": "4.0.7",
-    "vite-imagetools": "10.0.1",
-    "vitest": "4.1.11"
+    "vite-imagetools": "10.0.1"
   }
 }

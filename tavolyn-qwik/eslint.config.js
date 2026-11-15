@@ -35,14 +35,12 @@ const ignores = [
   "**/.rollup.cache",
   "**/dist",
   "**/tsconfig.tsbuildinfo",
-  "**/vite.config.ts",
-  "**/*.spec.tsx",
-  "**/*.spec.ts",
   "**/.netlify",
   "**/pnpm-lock.yaml",
   "**/package-lock.json",
   "**/yarn.lock",
   "**/server",
+  "worker-configuration.d.ts",
   "eslint.config.js",
 ];
 
@@ -67,7 +65,8 @@ export default tseslint.config(
   },
   {
     rules: {
-      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-explicit-any": "error",
+      "arrow-parens": ["error", "always"],
     },
   },
 );
