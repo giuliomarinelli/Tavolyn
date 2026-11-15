@@ -15,7 +15,7 @@ npm ci
 npm exec --workspace tavolyn-qwik -- playwright install chromium
 npm run db:setup
 npm run check
-npm run preview
+npm run cf:dev
 ```
 
 Su Windows usare `npm.cmd` se PowerShell intercetta `npm.ps1`. L'installazione
@@ -65,7 +65,8 @@ navigazione, visibili solo in questa modalità.
 | `npm test`             | Integrazione su Worker compilato e D1 isolata; richiede una build           |
 | `npm run test:browser` | Sei verifiche Chromium responsive; richiede una build e Chromium installato |
 | `npm run check`        | Typecheck, lint, build, integrazione e browser, in sequenza                 |
-| `npm run dev`          | Build iniziale e avvio Wrangler locale                                      |
+| `npm run cf:dev`       | Build iniziale e avvio Wrangler locale con binding D1                       |
+| `npm run dev`          | Alias di `cf:dev`                                                           |
 | `npm run preview`      | Avvio dell'ultima build su Wrangler, porta 8787                             |
 | `npm run dev:vite`     | Authoring HMR, porta 5173, con gli stessi dati D1 locali                    |
 | `npm run benchmark`    | Profiling locale sul preview già attivo                                     |
@@ -78,6 +79,13 @@ Per una modifica: fermare preview, eseguire `npm run check`, poi riavviare
 `npm run preview`. Non ricostruire `dist/` durante il profiling. Arrestare i server
 manuali con Ctrl+C. Vite è uno strumento di authoring; la verifica runtime usa
 Wrangler/workerd.
+
+`cf:dev` esegue prima la build (che usa Vite come compilatore), poi avvia
+`wrangler dev --local` sulla porta 8787. Il server applicativo è quindi workerd,
+con il binding `DB` e lo stesso stato locale utilizzato da migrazioni e seed.
+`dev:vite` avvia invece l'authoring HMR sulla porta 5173. Dopo una modifica,
+riavviare `cf:dev` per ricompilare il Worker; il comando non abilita HMR né applica
+automaticamente le migrazioni. Eseguire prima `npm run db:setup` quando necessario.
 
 ## Struttura e documentazione
 

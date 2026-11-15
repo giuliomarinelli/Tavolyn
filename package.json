@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace tavolyn-qwik",
+    "cf:dev": "npm run cf:dev --workspace tavolyn-qwik",
     "dev:vite": "npm run dev:vite --workspace tavolyn-qwik",
     "preview": "npm run preview --workspace tavolyn-qwik",
     "typecheck": "npm run typecheck --workspace tavolyn-qwik",

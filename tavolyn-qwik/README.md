@@ -18,10 +18,12 @@ npm run db:setup
 npm run build
 npm test
 npm run test:browser
-npm run preview
+npm run cf:dev
 ```
 
 Il runtime locale è Wrangler/workerd su <http://127.0.0.1:8787/>. `dev:vite`
 rimane uno strumento HMR opzionale, non una verifica del runtime Workers.
 Non esistono preview server Node o backend separati da avviare.
 Le due homepage sono su `aurora.localhost:8787` e `nodo.localhost:8787`.
+`cf:dev` esegue build e Wrangler; `dev` è un suo alias. Vite viene usato durante
+la compilazione, mentre il runtime con i binding Cloudflare è workerd.

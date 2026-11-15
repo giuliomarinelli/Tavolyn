@@ -97,7 +97,7 @@ non contengono dati privati e non richiedono una risoluzione tenant.
 | `localhost`, `127.0.0.1` | Aurora | Alias locali di ingresso                              |
 
 `.test` e `.localhost` non rappresentano domini pubblici acquistati o configurati.
-La base Wrangler imposta `LOCAL_DEMO_MODE=false`. `preview`/`dev` aggiungono
+La base Wrangler imposta `LOCAL_DEMO_MODE=false`. `preview`/`cf:dev`/`dev` aggiungono
 esplicitamente `--var LOCAL_DEMO_MODE:true` al solo processo locale; Vite HMR
 abilita lo stesso flag nella sua proxy di sviluppo, fuori dal bundle Worker.
 
@@ -118,7 +118,7 @@ npm run cf-typegen
 npm run db:migrate
 npm run db:seed
 npm run check
-npm run preview
+npm run cf:dev
 ```
 
 `npm run db:setup` equivale agli ultimi due comandi D1 in sequenza.
@@ -139,6 +139,20 @@ Risultato verificato dopo più setup: **2 tenant, 6 domini, 1 migrazione**.
 Aprire poi `http://aurora.localhost:8787/` e `http://nodo.localhost:8787/`.
 Per HMR eseguire separatamente `npm run dev:vite`, dopo il setup D1, e usare
 gli stessi hostname sulla porta 5173. Non sono necessarie modifiche DNS pubbliche.
+
+Il comando esplicito **`npm run cf:dev`**, disponibile sia nella radice sia nel
+workspace, esegue `npm run build && npm run preview`: Vite compila client e SSR,
+poi Wrangler avvia workerd con i binding Cloudflare locali. `dev` è un alias di
+questa sequenza; `dev:vite` identifica l'authoring HMR. La build non pubblica
+risorse e il comando non applica migrazioni automaticamente: usare `db:setup`
+prima dell'avvio quando il database deve essere inizializzato.
+
+Il comando `cf:dev` è stato provato direttamente dalla radice: completata la
+build, Wrangler ha esposto il binding DB locale e restituito le configurazioni
+distinte Aurora/Nodo e health HTTP 200 sulla porta 8787. Il gate completo è
+stato rieseguito con 34 test Workers/D1 e 6 test browser passati; questi ultimi
+confrontano anche le risposte API con il ristorante visualizzato. Log locali in
+`.wrangler/cf-dev-smoke.log` e `.wrangler/cf-dev-check.log`, esclusi da Git.
 
 ## Verifica automatica e visuale
 

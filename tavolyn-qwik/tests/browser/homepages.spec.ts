@@ -27,6 +27,23 @@ for (const restaurant of restaurants) {
         `http://${restaurant.slug}.localhost:8787/`,
       );
       expect(response?.status()).toBe(200);
+      const runtime = await page.evaluate(async () => {
+        const site = await fetch("/api/public/site");
+        const health = await fetch("/api/health");
+        return {
+          siteStatus: site.status,
+          site: await site.json(),
+          healthStatus: health.status,
+          health: await health.json(),
+        };
+      });
+      expect(runtime.siteStatus).toBe(200);
+      expect(runtime.site).toMatchObject({
+        name: restaurant.name,
+        slug: restaurant.slug,
+      });
+      expect(runtime.healthStatus).toBe(200);
+      expect(runtime.health).toEqual({ status: "ok", service: "tavolyn" });
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(
         restaurant.name,
       );
