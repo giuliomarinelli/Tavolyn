@@ -23,6 +23,11 @@ These names are provisional demo fixtures; never assert trademark clearance. Do 
 
 Do not ship fake buttons or broken navigation. It is better to omit a section than to render an inert control.
 
+Implemented through TAV-MVP-03: restaurant homepages, `/menu/` and `/cart/`.
+The cart shows an indicative client total and a clear explanation that checkout
+will arrive in the next phase. There is no quote request, checkout CTA or order
+submission yet. See [current acceptance evidence](./TAV-MVP-03.md).
+
 ## Core end-to-end scenario
 1. Open Aurora homepage; see Aurora branding.
 2. Open menu, select Margherita, choose permitted modifier, add two to cart.

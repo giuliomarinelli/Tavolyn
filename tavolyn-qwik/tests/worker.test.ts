@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { readFile } from "node:fs/promises";
 import { createTestHarness, unstable_splitSqlQuery } from "wrangler";
 import type { RestaurantSite } from "../src/lib/shared/site";
+import type { RestaurantMenu } from "../src/lib/shared/catalog";
 
 // Integration tests use the actual adapter output, never a mocked HTTP handler.
 const server = createTestHarness({
@@ -10,6 +11,7 @@ const server = createTestHarness({
 let database: D1Database;
 let migration: string;
 let seed: string;
+let catalogSeed: string;
 const auroraOrigin = "https://aurora.tavolyn.test";
 const nodoOrigin = "https://nodo.tavolyn.test";
 const applySql = async (sql: string) => {
@@ -36,6 +38,9 @@ beforeAll(async () => {
   seed = await readFile("seeds/demo-tenants.sql", "utf8");
   await applySql(migration);
   await applySql(seed);
+  await applySql(await readFile("migrations/0002_catalog.sql", "utf8"));
+  catalogSeed = await readFile("seeds/demo-catalog.sql", "utf8");
+  await applySql(catalogSeed);
 });
 
 afterAll(async () => {
@@ -345,6 +350,278 @@ describe("D1 tenants and authorized hostnames", () => {
     "http://localhost/",
   ])("disables local aliases in public configuration: %s", async (url) => {
     expect((await server.fetch(url)).status).toBe(404);
+  });
+});
+
+describe("incremental D1 catalog", () => {
+  const auroraId = "bbf324b9-0aab-4e61-9001-4ed11d0e05b1";
+  const nodoId = "0fb0bff7-67e2-4848-9002-c975c0748af2";
+  const menuFor = async (origin: string, suffix = "") => {
+    const response = await server.fetch(`${origin}/api/public/menu${suffix}`, {
+      headers: {
+        "X-Tenant-Id": nodoId,
+        "X-Forwarded-Host": "nodo.tavolyn.test",
+        Cookie: "tenant=nodo",
+      },
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Cache-Control")).toBe("no-store");
+    return (await response.json()) as RestaurantMenu;
+  };
+
+  it("adds the catalog without altering existing tenants and keeps foreign keys valid", async () => {
+    expect(
+      await database
+        .prepare("SELECT COUNT(*) AS count FROM tenants")
+        .first("count"),
+    ).toBe(2);
+    expect(
+      await database
+        .prepare("SELECT COUNT(*) AS count FROM tenant_domains")
+        .first("count"),
+    ).toBe(6);
+    expect(
+      (await database.prepare("PRAGMA foreign_key_check").all()).results,
+    ).toEqual([]);
+    expect(
+      (
+        await database
+          .prepare(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('categories','products','modifier_groups','modifiers')",
+          )
+          .all()
+      ).results,
+    ).toHaveLength(4);
+  });
+
+  it("replays catalog seed without duplicates and preserves manual changes", async () => {
+    const before = await database
+      .prepare("SELECT * FROM products ORDER BY tenant_id, id")
+      .all();
+    await applySql(catalogSeed);
+    expect(
+      (
+        await database
+          .prepare("SELECT * FROM products ORDER BY tenant_id, id")
+          .all()
+      ).results,
+    ).toEqual(before.results);
+    const original = await database
+      .prepare(
+        "SELECT base_price_cents FROM products WHERE tenant_id = ? AND slug = 'margherita'",
+      )
+      .bind(auroraId)
+      .first<number>("base_price_cents");
+    await database
+      .prepare(
+        "UPDATE products SET base_price_cents = 1234 WHERE tenant_id = ? AND slug = 'margherita'",
+      )
+      .bind(auroraId)
+      .run();
+    try {
+      const snapshot = [];
+      for (const table of [
+        "categories",
+        "products",
+        "modifier_groups",
+        "modifiers",
+      ])
+        snapshot.push(
+          (
+            await database
+              .prepare(`SELECT * FROM ${table} ORDER BY tenant_id, id`)
+              .all()
+          ).results,
+        );
+      await applySql(catalogSeed);
+      const after = [];
+      for (const table of [
+        "categories",
+        "products",
+        "modifier_groups",
+        "modifiers",
+      ])
+        after.push(
+          (
+            await database
+              .prepare(`SELECT * FROM ${table} ORDER BY tenant_id, id`)
+              .all()
+          ).results,
+        );
+      expect(after).toEqual(snapshot);
+      expect(
+        (await menuFor(auroraOrigin)).categories
+          .flatMap((c) => c.products)
+          .find((p) => p.slug === "margherita")?.basePriceCents,
+      ).toBe(1234);
+    } finally {
+      await database
+        .prepare(
+          "UPDATE products SET base_price_cents = ? WHERE tenant_id = ? AND slug = 'margherita'",
+        )
+        .bind(original, auroraId)
+        .run();
+    }
+  });
+
+  it.each([
+    ["products", "category_id", "categories"],
+    ["modifier_groups", "product_id", "products"],
+    ["modifiers", "group_id", "modifier_groups"],
+  ])("rejects a cross-tenant parent on %s", async (table, column, parent) => {
+    const otherId = await database
+      .prepare(`SELECT id FROM ${parent} WHERE tenant_id = ? LIMIT 1`)
+      .bind(nodoId)
+      .first<string>("id");
+    const ownId = await database
+      .prepare(`SELECT id FROM ${table} WHERE tenant_id = ? LIMIT 1`)
+      .bind(auroraId)
+      .first<string>("id");
+    await expect(
+      database
+        .prepare(
+          `UPDATE ${table} SET ${column} = ? WHERE tenant_id = ? AND id = ?`,
+        )
+        .bind(otherId, auroraId, ownId)
+        .run(),
+    ).rejects.toThrow(/FOREIGN KEY/);
+    await expect(
+      database
+        .prepare(
+          `UPDATE ${table} SET ${column} = 'missing' WHERE tenant_id = ? AND id = ?`,
+        )
+        .bind(auroraId, ownId)
+        .run(),
+    ).rejects.toThrow(/FOREIGN KEY/);
+  });
+
+  it.each([
+    "UPDATE products SET base_price_cents = 2.5",
+    "UPDATE products SET base_price_cents = -1",
+    "UPDATE modifiers SET delta_price_cents = -1",
+    "UPDATE modifiers SET delta_price_cents = 1.5",
+    "UPDATE products SET available = 2",
+    "UPDATE modifier_groups SET min_select = max_select + 1",
+    "UPDATE modifier_groups SET max_select = 0",
+    "UPDATE modifier_groups SET max_select = 1.5",
+    "UPDATE categories SET tenant_id = 'missing'",
+  ])("enforces SQL integrity: %s", async (sql) => {
+    await expect(database.prepare(sql).run()).rejects.toThrow();
+  });
+
+  it("returns distinct ordered catalogs and ignores hostile tenant/product selectors", async () => {
+    const aurora = await menuFor(
+      auroraOrigin,
+      `?tenantId=${nodoId}&tenant=nodo`,
+    );
+    const nodo = await menuFor(nodoOrigin);
+    const a = aurora.categories.flatMap((c) => c.products);
+    const n = nodo.categories.flatMap((c) => c.products);
+    expect(a).toHaveLength(15);
+    expect(n).toHaveLength(12);
+    expect(aurora.categories[0].name).toBe("Antipasti");
+    expect(nodo.categories[0].name).toBe("Classici, riletti");
+    expect(a.map((p) => p.id).some((id) => n.some((p) => p.id === id))).toBe(
+      false,
+    );
+    const attempted = await menuFor(
+      auroraOrigin,
+      `?productId=${n[0].id}&tenant_id=${nodoId}`,
+    );
+    expect(attempted).toEqual(aurora);
+    expect(JSON.stringify(aurora)).not.toContain("tenant_id");
+    expect(JSON.stringify(aurora)).not.toContain(nodoId);
+    expect(JSON.stringify(aurora)).not.toContain("Margherita Lab");
+    expect(a.some((p) => !p.available)).toBe(true);
+    expect(n.some((p) => !p.available)).toBe(true);
+    for (const product of [...a, ...n]) {
+      expect(Number.isInteger(product.basePriceCents)).toBe(true);
+      for (const group of product.modifierGroups) {
+        expect(group.minSelect).toBeLessThanOrEqual(group.maxSelect);
+        for (const modifier of group.modifiers)
+          expect(Number.isInteger(modifier.deltaPriceCents)).toBe(true);
+      }
+    }
+    expect(
+      a
+        .flatMap((p) => p.modifierGroups)
+        .flatMap((g) => g.modifiers)
+        .some((m) => !m.available),
+    ).toBe(true);
+  });
+
+  it.each([
+    [auroraOrigin, "Margherita", "Margherita Lab"],
+    [nodoOrigin, "Margherita Lab", "Crostini dell’orto"],
+  ])("renders menu and cart for %s", async (origin, own, other) => {
+    const response = await server.fetch(`${origin}/menu/`);
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    expect(html).toContain(own);
+    expect(html).not.toContain(other);
+    expect(html).toContain("Esaurito per oggi");
+    const cart = await server.fetch(`${origin}/cart/`);
+    expect(cart.status).toBe(200);
+    expect(await cart.text()).toContain("Recuperiamo il tuo carrello");
+  });
+
+  it("omits inactive categories and handles an empty menu", async () => {
+    await database
+      .prepare("UPDATE categories SET active = 0 WHERE tenant_id = ?")
+      .bind(auroraId)
+      .run();
+    try {
+      expect((await menuFor(auroraOrigin)).categories).toEqual([]);
+      expect((await menuFor(nodoOrigin)).categories).toHaveLength(5);
+      const response = await server.fetch(`${auroraOrigin}/menu/`);
+      expect(await response.text()).toContain(
+        "Il prossimo incontro è in preparazione",
+      );
+    } finally {
+      await database
+        .prepare("UPDATE categories SET active = 1 WHERE tenant_id = ?")
+        .bind(auroraId)
+        .run();
+    }
+  });
+
+  it("rejects unrecognized hosts and API mutations", async () => {
+    expect(
+      (await server.fetch("https://unknown.test/api/public/menu")).status,
+    ).toBe(404);
+    const response = await server.fetch(`${auroraOrigin}/api/public/menu`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tenantId: nodoId }),
+    });
+    expect(response.status).toBe(405);
+    expect(response.headers.get("Allow")).toBe("GET");
+    expect(await response.json()).toMatchObject({
+      error: { code: "METHOD_NOT_ALLOWED" },
+    });
+  });
+
+  it("returns a safe 503 on catalog storage failure without breaking site/health", async () => {
+    await database
+      .prepare("ALTER TABLE modifiers RENAME TO modifiers_unavailable")
+      .run();
+    try {
+      const response = await server.fetch(`${auroraOrigin}/api/public/menu`);
+      expect(response.status).toBe(503);
+      const body = await response.text();
+      expect(JSON.parse(body)).toMatchObject({
+        error: { code: "MENU_UNAVAILABLE", requestId: expect.any(String) },
+      });
+      expect(body).not.toMatch(/SELECT|no such table|modifiers_unavailable/);
+      expect(
+        (await server.fetch(`${auroraOrigin}/api/public/site`)).status,
+      ).toBe(200);
+      expect((await server.fetch("/api/health")).status).toBe(200);
+    } finally {
+      await database
+        .prepare("ALTER TABLE modifiers_unavailable RENAME TO modifiers")
+        .run();
+    }
   });
 });
 

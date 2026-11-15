@@ -55,6 +55,11 @@ TAV-MVP-02 adds the local shared D1 binding, hostname-based tenant resolution,
 and distinct restaurant homepages. See the [TAV-MVP-02 runbook](./TAV-MVP-02.md)
 for local aliases, migrations, seed and automated browser acceptance.
 
+TAV-MVP-03 adds the incremental catalog schema, two distinct D1 menus, native
+`GET /api/public/menu`, `/menu/` and a tenant-local persistent `/cart/`.
+See the [catalog and cart runbook](./TAV-MVP-03.md). Quote, checkout and orders
+remain deferred to TAV-MVP-04; cart totals are indicative only.
+
 ## Source references
 - Qwik Workers adapter: https://qwik.dev/docs/deployments/cloudflare-workers/
 - Cloudflare Workers limits: https://developers.cloudflare.com/workers/platform/limits/

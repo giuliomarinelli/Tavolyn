@@ -65,6 +65,7 @@ export default component$(() => {
           <span>{site.name}</span>
         </a>
         <nav aria-label="Navigazione principale">
+          <a href="/menu/">Il menu</a>
           <a href="#il-luogo">Il nostro mondo</a>
           <a href="#contatti">
             Dove siamo <span aria-hidden="true">↗</span>
@@ -82,8 +83,8 @@ export default component$(() => {
             <h1 id="restaurant-name">{site.name}</h1>
             <h2>{brand.headline}</h2>
             <p class="intro">{brand.description}</p>
-            <a class="text-link" href="#il-luogo">
-              Entra nel nostro mondo <span aria-hidden="true">↘</span>
+            <a class="text-link" href="/menu/">
+              Scopri il nostro menu <span aria-hidden="true">↗</span>
             </a>
           </div>
           <div class="brand-art" aria-hidden="true">

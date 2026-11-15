@@ -3,8 +3,8 @@
 Demo portfolio Qwik 1.20 / Qwik City su **un solo Cloudflare Worker**.
 Il workspace `tavolyn-qwik/` serve due ristoranti fittizi, **Trattoria Aurora** e
 **Nodo Pizza Lab**, leggendo configurazioni e hostname da una sola D1 condivisa.
-Sono implementati runtime, tenant e branding (TAV-MVP-01/02). Catalogo, carrello,
-checkout e autenticazione appartengono ai task successivi.
+Sono implementati runtime, tenant, branding, catalogo e carrello (TAV-MVP-01/02/03).
+Checkout, ordini e autenticazione appartengono ai task successivi.
 
 ## Installazione e avvio locale
 
@@ -29,6 +29,9 @@ Con Wrangler attivo:
 - <http://nodo.localhost:8787/> — Nodo Pizza Lab.
 - <http://127.0.0.1:8787/> e <http://localhost:8787/> — alias locali di Aurora.
 - `/api/public/site` — configurazione pubblica del ristorante risolto.
+- `/menu/` — catalogo D1, categorie e piatti personalizzabili.
+- `/cart/` — carrello persistente nel browser, separato per ristorante.
+- `/api/public/menu` — catalogo pubblico con prezzi in centesimi e disponibilità.
 - <http://127.0.0.1:8787/api/health> — liveness indipendente da tenant e D1.
 
 Chromium risolve i nomi `.localhost` verso il loopback, senza DNS pubblico. In
@@ -63,7 +66,7 @@ navigazione, visibili solo in questa modalità.
 | `npm run lint`         | ESLint per sorgenti, configurazioni e test                                  |
 | `npm run build`        | Build Qwik e bundle Wrangler in dry run, senza upload                       |
 | `npm test`             | Integrazione su Worker compilato e D1 isolata; richiede una build           |
-| `npm run test:browser` | Sei verifiche Chromium responsive; richiede una build e Chromium installato |
+| `npm run test:browser` | Verifiche Chromium di homepage, menu e carrello; richiede build e Chromium |
 | `npm run check`        | Typecheck, lint, build, integrazione e browser, in sequenza                 |
 | `npm run cf:dev`       | Build iniziale e avvio Wrangler locale con binding D1                       |
 | `npm run dev`          | Alias di `cf:dev`                                                           |
@@ -93,8 +96,14 @@ Le pagine sono in `src/routes/`, gli endpoint in `src/routes/api/`, la logica
 server in `src/lib/server/` e i soli contratti pubblici in `src/lib/shared/`.
 Le future pagine gestionali potranno usare `src/routes/app/` nello stesso Worker.
 Il database è esposto a Qwik City come `RequestEvent.platform.env.DB`.
+`db:setup` applica anche `0002_catalog.sql` e i seed dei due menu, senza eliminare
+righe o sovrascrivere modifiche esistenti. Su un database demo inizializzato:
+10 categorie, 27 prodotti, 19 gruppi modificatori e 56 modificatori.
+Il carrello conserva solo ID, selezioni e quantità in `localStorage`; prezzi e
+totali sono indicativi, senza checkout o pulsanti di pagamento.
 
 - [Specifiche MVP autorevoli](docs/mvp/README.md).
+- [TAV-MVP-03: catalogo, API, carrello e verifiche](docs/mvp/TAV-MVP-03.md).
 - [TAV-MVP-02: schema, tenancy, seed, prove e limiti](docs/mvp/TAV-MVP-02.md).
 - [TAV-MVP-01: bootstrap e verifica storica](docs/mvp/TAV-MVP-01.md).
 

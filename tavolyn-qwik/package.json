@@ -22,7 +22,7 @@
     "lint": "eslint src tests scripts adapters vite.config.ts vitest.config.ts playwright.config.ts",
     "preview": "wrangler dev --local --ip 127.0.0.1 --port 8787 --var LOCAL_DEMO_MODE:true",
     "db:migrate": "wrangler d1 migrations apply DB --local",
-    "db:seed": "wrangler d1 execute DB --local --file seeds/demo-tenants.sql",
+    "db:seed": "wrangler d1 execute DB --local --file seeds/demo-tenants.sql && wrangler d1 execute DB --local --file seeds/demo-catalog.sql",
     "db:setup": "npm run db:migrate && npm run db:seed",
     "test": "vitest run",
     "test:browser": "playwright test",

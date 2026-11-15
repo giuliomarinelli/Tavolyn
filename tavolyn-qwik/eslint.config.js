@@ -18,7 +18,7 @@ const ignores = [
   "**/bazel-testlogs",
   "**/dist",
   "**/dist-dev",
-  "**/lib",
+  "lib/**",
   "**/lib-types",
   "**/etc",
   "**/external",
@@ -39,7 +39,7 @@ const ignores = [
   "**/pnpm-lock.yaml",
   "**/package-lock.json",
   "**/yarn.lock",
-  "**/server",
+  "server/**",
   "worker-configuration.d.ts",
   "eslint.config.js",
 ];
