@@ -146,16 +146,19 @@ export default component$(() => {
               </strong>
             </div>
             <p>
-              I prezzi sono dimostrativi. Il totale definitivo verrà verificato
-              dal ristorante nella futura fase di checkout.
+              I prezzi sono dimostrativi. Il totale verrà verificato sul menu
+              aggiornato durante il checkout.
             </p>
             <div class="checkout-note">
-              <strong>Qui ci fermiamo, per ora.</strong>
+              <strong>Pronto per il prossimo passo?</strong>
               <p>
-                Il checkout sarà integrato nella fase successiva della demo. Non
-                è ancora possibile inviare ordini o effettuare pagamenti.
+                Scegli ritiro o consegna e conferma un ordine dimostrativo.
+                Nessun addebito o pagamento reale.
               </p>
             </div>
+            <a class="button button-primary" href="/checkout/">
+              Vai al checkout
+            </a>
           </aside>
         </div>
       )}

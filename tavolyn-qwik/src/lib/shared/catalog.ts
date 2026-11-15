@@ -33,7 +33,7 @@ export const formatMoney = (cents: number, currency = "EUR"): string =>
     cents / 100,
   );
 
-// Presentation validation only. TAV-MVP-04 must validate again on the server.
+// Shared selection rules. Server callers must first load their tenant's D1 data.
 export const configurationError = (
   product: MenuProduct,
   modifierIds: string[],

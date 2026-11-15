@@ -5,6 +5,7 @@
   "compatibility_date": "2026-11-15",
   "compatibility_flags": ["nodejs_compat"],
   "send_metrics": false,
+  "secrets": { "required": ["ORDER_TOKEN_KEY"] },
   "vars": {
     "LOCAL_DEMO_MODE": "false",
   },

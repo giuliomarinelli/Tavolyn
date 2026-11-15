@@ -86,9 +86,9 @@ for (const slug of ["aurora", "nodo"]) {
       await page.reload();
       await expect(quantity).toHaveValue("4");
       await expect(page.locator(".cart-item")).toContainText(extras[0]);
-      await expect(page.locator(".checkout-note")).toContainText(
-        "checkout sarà integrato",
-      );
+      await expect(
+        page.getByRole("link", { name: "Vai al checkout" }),
+      ).toBeVisible();
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,
@@ -160,7 +160,9 @@ test("corrupt or inaccessible local storage leaves the shop usable", async ({
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("http://aurora.localhost:8787/cart/");
-  await expect(page.getByRole("link", { name: "Esplora il menu" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Esplora il menu" }),
+  ).toBeVisible();
   await page.evaluate(() =>
     localStorage.setItem("tavolyn:cart:v1:aurora", "invalid json"),
   );

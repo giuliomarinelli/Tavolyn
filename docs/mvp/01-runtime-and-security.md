@@ -69,4 +69,9 @@ Two seeded staff roles: OWNER and OPERATOR. Use explicit capabilities e.g. order
 ## Secrets / deploy safety
 Expected configurable secrets: COGNITO_ISSUER, COGNITO_CLIENT_ID, relevant OIDC secret only if using a confidential client, SESSION_HMAC_KEY, SESSION_ENCRYPTION_KEY (if retaining IdP tokens), EMAIL_API_KEY, TURNSTILE_SECRET. Public vars: site origin(s), demo mode, email sending state; do not put secrets in client bundles or tracked .env files.
 
+Implemented in TAV-MVP-04: `ORDER_TOKEN_KEY`, a private 256-bit HMAC key for
+reconstructing tracking tokens during an idempotent retry. Only token hashes and
+non-secret nonces are persisted in D1. See [key lifecycle and local setup](./TAV-MVP-04.md).
+Public anti-abuse and retention gates still apply before any authorized deploy.
+
 All cloud provisioning, DNS, billing changes, Cognito pool setup and email domain verification are **manual human-approved tasks**, not autonomous agent actions.

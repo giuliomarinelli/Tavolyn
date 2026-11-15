@@ -8,8 +8,10 @@ fixtures and constrain loopback aliases. See [schema and runbook](./TAV-MVP-02.m
 Implemented in TAV-MVP-03: `categories`, `products`, `modifier_groups`, `modifiers`,
 `GET /api/public/menu`, `/menu/` and client-side `/cart/`. See the
 [catalog model and public DTO](./TAV-MVP-03.md). The menu includes unavailable
-items/options with explicit availability. Quote, checkout, orders and all other
-entities/routes below remain contracts for subsequent tasks.
+items/options with explicit availability. TAV-MVP-04 implements quotes, guest
+checkout, `tenant_checkout_settings`, `orders`, `order_items`, `order_access` and
+`idempotency_records`. Tracking GET, events, outbox and staff routes remain
+contracts for subsequent tasks. See [the implemented checkout contract](./TAV-MVP-04.md).
 
 ## General rules
 - One shared D1 database (SQLite); every restaurant-owned row has tenant_id.
@@ -102,7 +104,8 @@ Response:
   "items":[{"productId":"prod_margherita","name":"Margherita","quantity":2,"unitPriceCents":1050,"lineTotalCents":2100}],
   "subtotalCents":2100,
   "deliveryFeeCents":0,
-  "totalCents":2100
+  "totalCents":2100,
+  "quoteFingerprint":"<64 hexadecimal characters from the server>"
 }
 ~~~
 
@@ -113,6 +116,7 @@ POST /api/public/orders:
   "cart":{"items":[{"productId":"prod_margherita","quantity":2,"modifierIds":["mod_bufala"]}]},
   "contact":{"name":"Demo Visitor","email":"visitor@example.test","phone":"0000000000"},
   "fulfillment":"PICKUP",
+  "quoteFingerprint":"<fingerprint returned by POST /api/public/quote>",
   "paymentMethod":"MOCK_CARD",
   "mockPaymentResult":"SUCCESS",
   "notes":""
@@ -123,15 +127,18 @@ Response example:
 ~~~json
 {
   "orderNumber":"A-001",
-  "trackingUrl":"/orders/<opaque-secret>",
+  "trackingToken":"<opaque-secret; no tracking route implemented yet>",
   "status":"NEW",
   "paymentStatus":"PAID_SIMULATED",
-  "totalCents":2100,
-  "emailStatus":"QUEUED"
+  "totalCents":2100
 }
 ~~~
 
 ### Critical API behaviors
+- The TAV-MVP-04 response also includes the quoted item summary, currency, fee,
+  payment method and UTC creation time. First success returns 201; replay 200.
+  No tracking link or email-queued claim is returned. Delivery requires address
+  `{ street, city, postalCode }`. Stale quote fingerprint returns 409.
 - Quote ignores client prices, validates selected modifiers belong to products and selection constraints; checks sold-out flags.
 - Order create re-quotes on server; client total is never trusted. Different request with reused idempotency key -> conflict, exact retry -> same order result, no duplicated email.
 - Use optimistic conditional state update and tenant filter; invalid transitions -> HTTP 409. Missing or other-tenant order -> 404; invalid input -> 400/422; unauthenticated -> 401; insufficient permission -> 403.

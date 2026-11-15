@@ -23,10 +23,11 @@ These names are provisional demo fixtures; never assert trademark clearance. Do 
 
 Do not ship fake buttons or broken navigation. It is better to omit a section than to render an inert control.
 
-Implemented through TAV-MVP-03: restaurant homepages, `/menu/` and `/cart/`.
-The cart shows an indicative client total and a clear explanation that checkout
-will arrive in the next phase. There is no quote request, checkout CTA or order
-submission yet. See [current acceptance evidence](./TAV-MVP-03.md).
+Implemented through TAV-MVP-04: restaurant homepages, `/menu/`, `/cart/` and
+`/checkout/`. The cart links to server quotes and a guest checkout with actual D1
+orders. Confirmation is recoverable in the same browser tab; live tracking,
+timeline and email are deferred. No inert tracking links or real card fields.
+See [checkout acceptance evidence](./TAV-MVP-04.md).
 
 ## Core end-to-end scenario
 1. Open Aurora homepage; see Aurora branding.

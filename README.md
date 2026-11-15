@@ -3,8 +3,9 @@
 Demo portfolio Qwik 1.20 / Qwik City su **un solo Cloudflare Worker**.
 Il workspace `tavolyn-qwik/` serve due ristoranti fittizi, **Trattoria Aurora** e
 **Nodo Pizza Lab**, leggendo configurazioni e hostname da una sola D1 condivisa.
-Sono implementati runtime, tenant, branding, catalogo e carrello (TAV-MVP-01/02/03).
-Checkout, ordini e autenticazione appartengono ai task successivi.
+Sono implementati runtime, tenant, branding, catalogo, carrello e checkout ospite
+con ordini D1 (TAV-MVP-01/02/03/04). Tracking, email e autenticazione restano ai
+task successivi. Tutti i pagamenti sono dimostrativi, senza addebiti reali.
 
 ## Installazione e avvio locale
 
@@ -14,6 +15,7 @@ Servono Node.js **22.16.0** e npm **10.9.2**. Dalla radice del repository:
 npm ci
 npm exec --workspace tavolyn-qwik -- playwright install chromium
 npm run db:setup
+npm run checkout:setup
 npm run check
 npm run cf:dev
 ```
@@ -32,6 +34,8 @@ Con Wrangler attivo:
 - `/menu/` — catalogo D1, categorie e piatti personalizzabili.
 - `/cart/` — carrello persistente nel browser, separato per ristorante.
 - `/api/public/menu` — catalogo pubblico con prezzi in centesimi e disponibilità.
+- `/checkout/` — preventivo autorevole, ritiro/consegna, pagamento simulato o contanti.
+- `POST /api/public/quote` e `POST /api/public/orders` — preventivo e ordine idempotente.
 - <http://127.0.0.1:8787/api/health> — liveness indipendente da tenant e D1.
 
 Chromium risolve i nomi `.localhost` verso il loopback, senza DNS pubblico. In
@@ -61,6 +65,7 @@ navigazione, visibili solo in questa modalità.
 | `npm run db:migrate`   | Applica solo le migrazioni D1 locali non ancora registrate                  |
 | `npm run db:seed`      | Inserisce i fixture mancanti senza duplicare o sovrascrivere righe          |
 | `npm run db:setup`     | Migrazioni e seed locali, in sequenza                                       |
+| `npm run checkout:setup` | Crea la chiave privata locale se `.dev.vars` non esiste, senza stamparla |
 | `npm run cf-typegen`   | Rigenera `Env` dai binding Wrangler                                         |
 | `npm run typecheck`    | TypeScript strict per sorgenti, configurazioni e test                       |
 | `npm run lint`         | ESLint per sorgenti, configurazioni e test                                  |
@@ -96,20 +101,25 @@ Le pagine sono in `src/routes/`, gli endpoint in `src/routes/api/`, la logica
 server in `src/lib/server/` e i soli contratti pubblici in `src/lib/shared/`.
 Le future pagine gestionali potranno usare `src/routes/app/` nello stesso Worker.
 Il database è esposto a Qwik City come `RequestEvent.platform.env.DB`.
-`db:setup` applica anche `0002_catalog.sql` e i seed dei due menu, senza eliminare
+`db:setup` applica anche `0002_catalog.sql`, `0003_checkout.sql` e i seed dei due menu e delle tariffe, senza eliminare
 righe o sovrascrivere modifiche esistenti. Su un database demo inizializzato:
 10 categorie, 27 prodotti, 19 gruppi modificatori e 56 modificatori.
-Il carrello conserva solo ID, selezioni e quantità in `localStorage`; prezzi e
-totali sono indicativi, senza checkout o pulsanti di pagamento.
+Il carrello conserva solo ID, selezioni e quantità in `localStorage`. Il checkout
+ricalcola i prezzi su D1 e salva ordine, snapshot e idempotenza atomicamente.
+La chiave `ORDER_TOKEN_KEY` resta in `tavolyn-qwik/.dev.vars`, ignorato da Git:
+non cancellarla o rigenerarla, perché serve a ricostruire i token nei retry.
+Se il file esiste già, `checkout:setup` lo conserva senza leggerlo o modificarlo;
+seguire il runbook TAV-MVP-04 per integrare una configurazione privata esistente.
 
 - [Specifiche MVP autorevoli](docs/mvp/README.md).
+- [TAV-MVP-04: checkout, atomicità, idempotenza e setup privato locale](docs/mvp/TAV-MVP-04.md).
 - [TAV-MVP-03: catalogo, API, carrello e verifiche](docs/mvp/TAV-MVP-03.md).
 - [TAV-MVP-02: schema, tenancy, seed, prove e limiti](docs/mvp/TAV-MVP-02.md).
 - [TAV-MVP-01: bootstrap e verifica storica](docs/mvp/TAV-MVP-01.md).
 
 Stato D1 locale e output generati risiedono sotto `tavolyn-qwik/.wrangler/`.
 Non inserire segreti nel codice o nelle variabili Vite. Eventuali futuri valori
-privati locali andranno in `tavolyn-qwik/.dev.vars`, ignorato da Git: ora non serve.
+privati locali restano in `tavolyn-qwik/.dev.vars`, ignorato da Git.
 Nessun database remoto o UUID cloud è configurato; un futuro setup pubblico
 richiederà risorse e identificativi reali approvati dal proprietario.
 

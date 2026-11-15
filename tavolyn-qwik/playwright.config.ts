@@ -16,7 +16,7 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command: "npm run db:setup && npm run preview",
+    command: "npm run db:setup && npm run checkout:setup && npm run preview",
     url: "http://127.0.0.1:8787/api/health",
     reuseExistingServer: false,
     timeout: 60_000,

@@ -11,12 +11,15 @@ Schema D1, alias locali e prove di isolamento sono nel
 [runbook TAV-MVP-02](../docs/mvp/TAV-MVP-02.md).
 Catalogo D1, modificatori e carrello client sono nel
 [runbook TAV-MVP-03](../docs/mvp/TAV-MVP-03.md).
+Checkout ospite, tariffe, chiave privata locale e ordini atomici sono nel
+[runbook TAV-MVP-04](../docs/mvp/TAV-MVP-04.md).
 
 Dentro questo workspace, dopo `npm ci` dalla radice:
 
 ```sh
 npm exec -- playwright install chromium
 npm run db:setup
+npm run checkout:setup
 npm run build
 npm test
 npm run test:browser
@@ -28,7 +31,9 @@ rimane uno strumento HMR opzionale, non una verifica del runtime Workers.
 Non esistono preview server Node o backend separati da avviare.
 Le due homepage sono su `aurora.localhost:8787` e `nodo.localhost:8787`.
 Da entrambe si raggiungono `/menu/` e `/cart/`; `/api/public/menu` espone solo
-il catalogo del tenant risolto. `db:setup` applica entrambe le migrazioni e i due
-seed non distruttivi. Checkout e ordini non sono ancora implementati.
+il catalogo del tenant risolto. `db:setup` applica tre migrazioni e tre seed non
+distruttivi. `/checkout/` crea ordini D1 con pagamenti solo dimostrativi.
+Conservare `.dev.vars`: contiene `ORDER_TOKEN_KEY`, necessario ai replay sicuri;
+il comando di setup non sovrascrive un file privato esistente.
 `cf:dev` esegue build e Wrangler; `dev` è un suo alias. Vite viene usato durante
 la compilazione, mentre il runtime con i binding Cloudflare è workerd.

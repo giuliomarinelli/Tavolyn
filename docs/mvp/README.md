@@ -58,7 +58,12 @@ for local aliases, migrations, seed and automated browser acceptance.
 TAV-MVP-03 adds the incremental catalog schema, two distinct D1 menus, native
 `GET /api/public/menu`, `/menu/` and a tenant-local persistent `/cart/`.
 See the [catalog and cart runbook](./TAV-MVP-03.md). Quote, checkout and orders
-remain deferred to TAV-MVP-04; cart totals are indicative only.
+are implemented in TAV-MVP-04; cart totals remain indicative until checkout.
+
+TAV-MVP-04 adds server-authoritative quotes, guest checkout, delivery fees,
+cash/mock payment and atomic idempotent D1 orders. Tracking pages, timeline and
+email remain deferred. See the [checkout runbook](./TAV-MVP-04.md), including the
+local private signing-key setup required for secure replay.
 
 ## Source references
 - Qwik Workers adapter: https://qwik.dev/docs/deployments/cloudflare-workers/

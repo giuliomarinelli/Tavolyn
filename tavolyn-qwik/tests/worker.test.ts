@@ -41,6 +41,8 @@ beforeAll(async () => {
   await applySql(await readFile("migrations/0002_catalog.sql", "utf8"));
   catalogSeed = await readFile("seeds/demo-catalog.sql", "utf8");
   await applySql(catalogSeed);
+  await applySql(await readFile("migrations/0003_checkout.sql", "utf8"));
+  await applySql(await readFile("seeds/demo-checkout.sql", "utf8"));
 });
 
 afterAll(async () => {

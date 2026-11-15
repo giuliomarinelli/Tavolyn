@@ -5,6 +5,7 @@
     "tavolyn-qwik"
   ],
   "scripts": {
+    "checkout:setup": "npm run checkout:setup --workspace tavolyn-qwik",
     "dev": "npm run dev --workspace tavolyn-qwik",
     "cf:dev": "npm run cf:dev --workspace tavolyn-qwik",
     "dev:vite": "npm run dev:vite --workspace tavolyn-qwik",
