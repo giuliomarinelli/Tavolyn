@@ -3,6 +3,8 @@
 ## One Worker, not two servers
 Local commands, actual adapter configuration and verification limits are recorded
 in [TAV-MVP-01](./TAV-MVP-01.md) and the [root README](../../README.md).
+The implemented D1/hostname policy and local-only preview configuration are
+documented in [TAV-MVP-02](./TAV-MVP-02.md).
 
 Keep the Qwik 1.20 / Qwik City application in tavolyn-qwik. Install/configure the **official Cloudflare Workers adapter** for its current versions. The SAME deploy serves restaurant pages, staff pages and /api/* handlers.
 

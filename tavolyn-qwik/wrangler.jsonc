@@ -5,6 +5,18 @@
   "compatibility_date": "2026-11-15",
   "compatibility_flags": ["nodejs_compat"],
   "send_metrics": false,
+  "vars": {
+    "LOCAL_DEMO_MODE": "false",
+  },
+  // Local database name only. No remote database or UUID has been provisioned.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tavolyn-local",
+      "migrations_dir": "migrations",
+      "remote": false,
+    },
+  ],
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist",

@@ -51,6 +51,10 @@ workspace and removes the unused Nest starter completely. Pages and API route
 handlers run in one Cloudflare Worker. See the [local setup](../../README.md)
 and [TAV-MVP-01 implementation report](./TAV-MVP-01.md).
 
+TAV-MVP-02 adds the local shared D1 binding, hostname-based tenant resolution,
+and distinct restaurant homepages. See the [TAV-MVP-02 runbook](./TAV-MVP-02.md)
+for local aliases, migrations, seed and automated browser acceptance.
+
 ## Source references
 - Qwik Workers adapter: https://qwik.dev/docs/deployments/cloudflare-workers/
 - Cloudflare Workers limits: https://developers.cloudflare.com/workers/platform/limits/

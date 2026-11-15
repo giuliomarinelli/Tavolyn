@@ -9,6 +9,10 @@ export default defineConfig(async ({ command }) => {
     command === "serve"
       ? await (await import("wrangler")).getPlatformProxy<Env>()
       : undefined;
+  if (platform) {
+    // Authoring only: this branch is never part of the built Worker.
+    platform.env.LOCAL_DEMO_MODE = "true";
+  }
 
   return {
     plugins: [qwikCity({ platform }), qwikVite(), tsconfigPaths()],

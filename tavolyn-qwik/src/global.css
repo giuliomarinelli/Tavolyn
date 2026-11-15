@@ -1,39 +1,407 @@
 :root {
-  font-family: system-ui, sans-serif;
-  color: #24372b;
-  background: #f8f7f2;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #342a20;
+  background: #f6f0e5;
   line-height: 1.6;
+  font-synthesis: none;
 }
-
 * {
   box-sizing: border-box;
 }
-
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+}
 body {
   margin: 0;
 }
-
-main {
-  max-width: 44rem;
-  margin: 0 auto;
-  padding: clamp(2rem, 8vw, 6rem) 1.5rem;
-}
-
-h1 {
-  font-size: clamp(2.5rem, 8vw, 4rem);
-  line-height: 1.1;
-}
-
-.demo-label {
-  font-weight: 600;
-}
-
 a {
-  color: #245c3b;
-  text-underline-offset: 0.2em;
+  color: inherit;
+  text-underline-offset: 0.3em;
 }
-
 a:focus-visible {
   outline: 3px solid currentColor;
-  outline-offset: 5px;
+  outline-offset: 6px;
+}
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+.restaurant {
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: clip;
+}
+.shell {
+  width: min(1280px, calc(100% - 6rem));
+  margin-inline: auto;
+}
+.demo-strip {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 3rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.72rem;
+  letter-spacing: 0.025em;
+}
+.preview-nav {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.preview-nav [aria-current] {
+  font-weight: bold;
+  text-decoration-thickness: 2px;
+}
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -6rem;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1rem;
+  z-index: 5;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  padding-block: 2rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+}
+.brand-lockup {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  text-decoration: none;
+  font-family: Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.site-header nav {
+  display: flex;
+  gap: 2.5rem;
+  font-size: 0.85rem;
+}
+.site-header nav a {
+  text-decoration: none;
+}
+.site-header nav a:hover {
+  text-decoration: underline;
+}
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  padding-block: 5rem 6rem;
+}
+.hero-copy,
+.brand-art {
+  min-width: 0;
+}
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.status-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 100%;
+  background: var(--accent);
+}
+.hero h1 {
+  font-size: 0.8rem;
+  font-weight: 400;
+  margin-top: 2rem;
+  color: var(--accent);
+}
+.hero h2 {
+  font:
+    400 clamp(3rem, 4.8vw, 4.8rem) / 1.07 Georgia,
+    serif;
+  letter-spacing: -0.045em;
+  max-width: 12ch;
+  margin: 0.65rem 0 1.75rem;
+  text-wrap: balance;
+}
+.intro {
+  font-size: 1rem;
+  max-width: 36ch;
+}
+.text-link {
+  display: inline-flex;
+  gap: 2rem;
+  align-items: center;
+  margin-top: 2rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--ink);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+.text-link span {
+  font-size: 1.4rem;
+}
+.brand-art {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface);
+  color: var(--accent);
+  border-radius: 48% 48% 2px 2px;
+  padding: 3rem 1.5rem 1.5rem;
+  min-height: 480px;
+}
+.art-caption {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-size: 1.15rem;
+  text-align: center;
+}
+.table-art {
+  width: min(100%, 400px);
+  margin-block: 1rem;
+}
+.outer-ring {
+  stroke-dasharray: 2 8;
+}
+.art-footnote {
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+}
+.signature-line {
+  display: flex;
+  justify-content: space-around;
+  gap: 3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 1.1rem 0;
+  border-block: 1px solid var(--accent);
+  color: var(--accent);
+  font:
+    italic 1.2rem Georgia,
+    serif;
+}
+.story {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+  padding-block: 6rem;
+}
+.story h2,
+.contact-section h2 {
+  font:
+    400 clamp(2.3rem, 3.5vw, 3.5rem) / 1.15 Georgia,
+    serif;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.story p:not(.eyebrow) {
+  max-width: 56ch;
+  margin-top: 1.5rem;
+}
+.contact-section {
+  background: var(--surface);
+  padding-block: 5rem;
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 6rem;
+}
+.contact-section h2 {
+  margin: 1.5rem 0;
+}
+.contact-section p {
+  max-width: 38ch;
+}
+.contact-details {
+  display: grid;
+  gap: 1.75rem;
+  align-content: center;
+}
+.contact-details h3 {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.4rem;
+  color: var(--accent);
+}
+.contact-details p {
+  overflow-wrap: anywhere;
+}
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 3rem;
+  align-items: center;
+  padding-block: 2.5rem;
+}
+.site-footer strong {
+  font-size: 0.85rem;
+}
+.site-footer p {
+  max-width: 58ch;
+  font-size: 0.7rem;
+  margin-top: 0.5rem;
+}
+.powered-by {
+  white-space: nowrap;
+  font-size: 0.75rem;
+}
+
+[data-brand="nodo"] .brand-lockup {
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.06em;
+  font-size: 1.5rem;
+}
+[data-brand="nodo"] .hero h2 {
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: -0.065em;
+  max-width: 13ch;
+}
+[data-brand="nodo"] .brand-art {
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  transform: rotate(2deg);
+}
+[data-brand="nodo"] .art-caption {
+  font:
+    600 0.8rem Arial,
+    sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+[data-brand="nodo"] .signature-line {
+  background: var(--accent);
+  color: var(--paper);
+  font:
+    700 0.9rem Arial,
+    sans-serif;
+  text-transform: uppercase;
+}
+[data-brand="nodo"] .story h2,
+[data-brand="nodo"] .contact-section h2 {
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.06em;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    width: calc(100% - 3rem);
+  }
+  .demo-strip {
+    padding-inline: 1.5rem;
+  }
+  .hero {
+    gap: 2rem;
+    padding-block: 3.5rem;
+  }
+  .hero h2 {
+    font-size: 3.25rem;
+  }
+  .brand-art {
+    min-height: 360px;
+    padding-top: 2rem;
+  }
+  .contact-grid {
+    gap: 3rem;
+  }
+}
+@media (max-width: 640px) {
+  .demo-strip {
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.65rem;
+  }
+  .site-header {
+    align-items: flex-start;
+    gap: 1.5rem;
+    flex-direction: column;
+    padding-block: 1.4rem;
+  }
+  .site-header nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.8rem;
+  }
+  .brand-lockup img {
+    width: 42px;
+    height: 42px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding-block: 2.5rem 3.5rem;
+  }
+  .hero h2 {
+    font-size: clamp(2.4rem, 11.5vw, 3.8rem);
+    max-width: 15ch;
+  }
+  .hero h1 {
+    margin-top: 1.5rem;
+  }
+  .intro {
+    max-width: 40ch;
+  }
+  .brand-art {
+    min-height: auto;
+    padding-top: 2rem;
+  }
+  .table-art {
+    width: 90%;
+  }
+  .story {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding-block: 3.5rem;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .contact-section {
+    padding-block: 3.5rem;
+  }
+  .site-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .signature-line {
+    justify-content: flex-start;
+    padding-inline: 1.5rem;
+    font-size: 1rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

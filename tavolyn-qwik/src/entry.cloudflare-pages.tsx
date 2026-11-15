@@ -12,4 +12,14 @@ declare global {
   };
 }
 
-export const fetch = createQwikCity({ render, qwikCityPlan });
+const handleRequest = createQwikCity({ render, qwikCityPlan });
+
+export const fetch: typeof handleRequest = (request, env, ctx) => {
+  // Workers already supplies the authoritative URL. Qwik's SSR metadata must
+  // not reconstruct an origin from client-supplied proxy headers.
+  const headers = new Headers(request.headers);
+  headers.delete("X-Forwarded-Host");
+  headers.delete("X-Forwarded-Proto");
+  headers.delete("Forwarded");
+  return handleRequest(new Request(request, { headers }), env, ctx);
+};

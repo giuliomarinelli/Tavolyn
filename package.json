@@ -11,10 +11,14 @@
     "typecheck": "npm run typecheck --workspace tavolyn-qwik",
     "lint": "npm run lint --workspace tavolyn-qwik",
     "test": "npm run test --workspace tavolyn-qwik",
+    "test:browser": "npm run test:browser --workspace tavolyn-qwik",
     "build": "npm run build --workspace tavolyn-qwik",
     "cf-typegen": "npm run cf-typegen --workspace tavolyn-qwik",
     "benchmark": "npm run benchmark --workspace tavolyn-qwik",
-    "check": "npm run typecheck && npm run lint && npm run build && npm test"
+    "db:migrate": "npm run db:migrate --workspace tavolyn-qwik",
+    "db:seed": "npm run db:seed --workspace tavolyn-qwik",
+    "db:setup": "npm run db:setup --workspace tavolyn-qwik",
+    "check": "npm run typecheck && npm run lint && npm run build && npm test && npm run test:browser"
   },
   "engines": {
     "node": "22.16.0",

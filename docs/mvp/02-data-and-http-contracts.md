@@ -2,6 +2,11 @@
 
 Status: stable MVP implementation contract. Names/types may be refined if justified by SQLite/Qwik runtime constraints and documented in the task report.
 
+Implemented in TAV-MVP-02: `tenants`, `tenant_domains`, and `GET /api/public/site`.
+The schema adds `tenants.is_demo` and `tenant_domains.local_only` to mark fictional
+fixtures and constrain loopback aliases. See [schema and runbook](./TAV-MVP-02.md).
+All other entities and HTTP routes below remain contracts for subsequent tasks.
+
 ## General rules
 - One shared D1 database (SQLite); every restaurant-owned row has tenant_id.
 - Primary IDs are opaque text UUIDs/ULIDs, never public authorization tokens.
