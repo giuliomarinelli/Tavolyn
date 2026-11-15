@@ -2,7 +2,7 @@
 
 Status: stable MVP implementation contract. Names/types may be refined if justified by SQLite/Qwik runtime constraints and documented in the task report.
 
-Implemented in TAV-MVP-02: `tenants`, `tenant_domains`, and `GET /api/public/site`.
+Implemented in TAV-MVP-02: `tenants`, `tenant_domains`, and `GET`/`HEAD /api/public/site`.
 The schema adds `tenants.is_demo` and `tenant_domains.local_only` to mark fictional
 fixtures and constrain loopback aliases. See [schema and runbook](./TAV-MVP-02.md).
 All other entities and HTTP routes below remain contracts for subsequent tasks.
@@ -63,7 +63,7 @@ All endpoints are illustrative fixed paths for initial implementation; document 
 
 | Method | Route | Purpose |
 | --- | --- | --- |
-| GET | /api/public/site | Resolved tenant branding, hours, contact and demo notice |
+| GET, HEAD | /api/public/site | Resolved tenant branding, hours, contact and demo notice; HEAD returns the same status and representation headers without a body |
 | GET | /api/public/menu | Categories, available products, modifiers, prices (cents) |
 | POST | /api/public/quote | Validate cart, compute authoritative amounts, fee and total |
 | POST | /api/public/orders | Place guest order with idempotency key, fulfillment and mock/cash payment mode |

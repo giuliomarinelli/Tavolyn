@@ -1,6 +1,11 @@
-# 04 — Codex work orders: sequential backbone, optional parallel UI
+# 04 — Codex work orders: serial synchronous execution
 
-Execute in order. Dependencies are hard gates. Each task changes only its intended domain and must produce tests + documentation. Avoid concurrent agents touching package.json, Wrangler config, migrations or the same route folders. After core contracts settle, UI and content may proceed in isolated branches.
+Execute assigned work orders in order. Dependencies are hard gates. Use one executing agent and one active task at a time, in serial synchronous mode. No subagents, parallel delegation or early start of subsequent tasks. Each task changes only its intended domain and must provide pertinent verification and documentation. Reuse valid evidence for unchanged code; do not repeat costly tests without a reason.
+
+## Git delivery gate
+After checks and documentation, create a descriptive commit on `develop` with GPG signing disabled for that command, then run `git push origin develop`, unless a blocker or an explicit contrary instruction prevents delivery. Protect unrelated/unpublished local changes. Verify that the pushed commit is reachable from `origin/develop` and that the SHA returned by the remote matches the local HEAD; include both in the report.
+
+Git push is part of delivery and is separate from Cloudflare deployment. Force-push, history rewriting, public deployments, cloud provisioning and billing changes require specific authorization. Do not bypass synchronization blockers, create incidental branches/merges or start the next task automatically. See [AGENTS.md](../../AGENTS.md) for the exact Git checks and commands.
 
 ## TAV-MVP-01 — Clean bootstrap + validate Workers runtime
 **Depends on:** none.
@@ -29,7 +34,7 @@ Execute in order. Dependencies are hard gates. Each task changes only its intend
 **Accept:** invalid token leaks nothing, same order timeline after reload, outbox one entry per order, deterministic email snapshot; email labeled as order summary, not tax receipt.
 
 ## TAV-MVP-06 — Cognito staff auth + server sessions
-**Depends on:** 02; integrate after 04 or in isolated branch.
+**Depends on:** 02; integrate after 04, serially and only when explicitly assigned.
 **Scope:** Cognito managed login OIDC code/PKCE, safe callback, server session D1, cookie, logout, seeded subject-to-tenant membership, minimal OWNER/OPERATOR caps.
 **Accept:** forged/replayed callback rejected, cookie host-only HttpOnly Secure on HTTPS, tokens never exposed; staff API 401/403 without authority; logout revokes; documented Cognito manual prerequisites and callback host configuration.
 **Important:** requires human-supplied Cognito pool/client/redirect setup; Codex must implement and validate with mocks until authorized.
@@ -52,7 +57,8 @@ Execute in order. Dependencies are hard gates. Each task changes only its intend
 
 ## Workstream policy
 - Human reviewer owns architecture and product scope. Codex implements and proves acceptance criteria.
-- Every task ends with a concise handoff including exact commands/test outcomes.
-- Parallelism is optional, not a requirement: avoid merge conflicts and wasted token usage.
-- Batch multiple small adjacent UI tasks only if they share a stable contract and the combined diff stays reviewable.
+- Every task ends with a concise handoff including actual checks, residual risks and verified local/remote commit SHA.
+- Serial synchronous execution is mandatory: one executing agent, one active task, no subagents or parallel delegation.
+- Commit and push to `develop` are part of delivery unless blocked or explicitly forbidden. Git push does not authorize a Cloudflare deployment.
+- Do not batch adjacent work orders or anticipate a subsequent task without explicit instruction.
 - No task may invent a payment integration, a second runtime, a new IdP, a CMS or a feature-flag control plane.

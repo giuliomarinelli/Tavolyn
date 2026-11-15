@@ -17,3 +17,8 @@ export const onRequest: RequestHandler = (event) => {
 export const onGet: RequestHandler = (event) => {
   event.json(200, getRequestTenant(event).site);
 };
+
+export const onHead: RequestHandler = ({ headers, send }) => {
+  headers.set("Content-Type", "application/json; charset=utf-8");
+  send(200, "");
+};

@@ -92,6 +92,37 @@ describe("the single Tavolyn Worker", () => {
 });
 
 describe("D1 tenants and authorized hostnames", () => {
+  it.each([auroraOrigin, nodoOrigin])(
+    "HEAD returns GET metadata without a body for %s",
+    async (origin) => {
+      const get = await server.fetch(`${origin}/api/public/site`);
+      expect(get.status).toBe(200);
+      await get.json();
+      const head = await server.fetch(`${origin}/api/public/site`, {
+        method: "HEAD",
+      });
+      expect(head.status).toBe(200);
+      expect(head.headers.get("Content-Type")).toBe(
+        get.headers.get("Content-Type"),
+      );
+      expect(head.headers.get("Cache-Control")).toBe(
+        get.headers.get("Cache-Control"),
+      );
+      expect(await head.text()).toBe("");
+    },
+  );
+
+  it.each(["https://unknown.tavolyn.test", "http://aurora.localhost"])(
+    "HEAD preserves tenant rejection for %s",
+    async (origin) => {
+      const response = await server.fetch(`${origin}/api/public/site`, {
+        method: "HEAD",
+      });
+      expect(response.status).toBe(404);
+      expect(await response.text()).toBe("");
+    },
+  );
+
   it("replays schema and seed without duplicates or changing data", async () => {
     const before = await database
       .prepare("SELECT * FROM tenants ORDER BY id")
@@ -263,6 +294,13 @@ describe("D1 tenants and authorized hostnames", () => {
     try {
       expect((await server.fetch(`${auroraOrigin}/`)).status).toBe(404);
       expect(
+        (
+          await server.fetch(`${auroraOrigin}/api/public/site`, {
+            method: "HEAD",
+          })
+        ).status,
+      ).toBe(404);
+      expect(
         (await server.fetch("https://unknown.test/api/health")).status,
       ).toBe(200);
     } finally {
@@ -328,6 +366,21 @@ describe("explicit local preview", () => {
     const site = await readSite(`http://${hostname}`);
     expect(site.name).toBe(name);
   });
+
+  it.each(["aurora.localhost", "nodo.localhost"])(
+    "HEAD resolves the enabled local alias %s",
+    async (hostname) => {
+      const response = await server.fetch(
+        `http://${hostname}/api/public/site`,
+        { method: "HEAD" },
+      );
+      expect(response.status).toBe(200);
+      expect(response.headers.get("Content-Type")).toContain(
+        "application/json",
+      );
+      expect(await response.text()).toBe("");
+    },
+  );
 
   it("renders the local navigation with fixed host links", async () => {
     const response = await server.fetch("http://nodo.localhost:8787/");

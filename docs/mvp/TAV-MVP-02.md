@@ -80,6 +80,10 @@ mappature dei domini o dati di altri tenant. Le risposte applicative hanno
 Hostname sconosciuto o tenant disabilitato: **404**. Configurazione D1 assente,
 non inizializzata o non valida: **503**, senza SQL o contenuti grezzi negli errori.
 Il solo endpoint site è di lettura: POST restituisce **405** con `Allow: GET, HEAD`.
+`HEAD /api/public/site` applica la stessa risoluzione tenant di GET e restituisce
+HTTP 200 con `Content-Type: application/json; charset=utf-8` e `Cache-Control:
+no-store`, senza corpo. Host sconosciuti, alias locali non abilitati e tenant
+disabilitati restano rifiutati anche con HEAD.
 Gli errori API hanno struttura `error: { code, message, requestId }`.
 
 Eccezioni esplicite: `/api/health` verifica la liveness del Worker senza interrogare
@@ -244,7 +248,56 @@ di test locale, senza introdurre un runtime applicativo aggiuntivo.
 Non sono implementate autenticazione o autorizzazioni staff: il servizio espone
 soltanto branding pubblico, non dati operativi. L'isolamento delle future entità
 tenant-owned dovrà essere verificato nei rispettivi task. Nessun setup esterno
-richiesto per questa consegna. Nessun push senza nuova autorizzazione.
+richiesto per questa consegna. Per le successive consegne vale la policy Git
+corrente di `AGENTS.md`: il push è parte del task e resta distinto dal deployment.
+
+## Workup finale e policy degli agenti — 15 novembre 2026
+
+Il controllo è partito da `7507d04`, già raggiungibile su `origin/develop` e
+identico al `develop` locale dopo `git fetch origin`. Worktree inizialmente
+pulito: nessuna modifica locale non pubblicata da sovrascrivere. Codice, schema,
+seed, test e documentazione del task erano già presenti; non sono stati ricreati.
+
+Nel nuovo percorso `C:\.project_repo\Tavolyn`, la junction npm del workspace
+puntava ancora al precedente percorso sotto System32. `npm ci` ha ripristinato
+il collegamento corretto dal lockfile, senza modificare dipendenze o file tracciati.
+
+È stato verificato un solo difetto applicativo: Qwik City 1.20 seleziona un
+handler `onHead` distinto da `onGet`. La route dichiarava HEAD ammesso ma non
+esportava `onHead`, quindi rispondeva 404 per tenant validi. Sei nuovi casi
+mirati hanno riprodotto quattro fallimenti sui tenant validi e due rifiuti
+corretti prima della correzione.
+
+La correzione aggiunge solo l'handler HEAD con status/header coerenti e corpo
+vuoto; il middleware tenant e il comportamento GET restano invariati. I test
+coprono entrambi i tenant, alias locali, host sconosciuti, modalità pubblica e
+tenant disabilitato. Contratto HTTP aggiornato anche in `02-data-and-http-contracts.md`.
+
+Verifiche effettivamente eseguite sul workup:
+
+- `npm ci`: riuscito, link workspace ripristinato, lockfile invariato.
+- Test mirati HEAD prima della correzione: difetto riprodotto sul Worker compilato.
+- `npm run build`: riuscito, inclusi typecheck, lint e bundle Wrangler in dry run;
+  output 203.37 KiB, gzip 60.05 KiB. Nessun upload.
+- `npm test`: **40 test Workers/D1 passati**, nessuno saltato nella suite finale.
+- Query D1 locale tramite Wrangler: **2 tenant, 6 domini, 1 migrazione registrata**.
+- `git diff --check`: nessun errore.
+
+I sei test browser già validi sul commit precedente non sono stati ripetuti:
+homepage, CSS, branding e navigazione non sono cambiati. Le regressioni di
+GET/HTML, isolamento, seed e modalità locale sono invece coperte dalla suite
+Workers/D1 rieseguita. Restano le advisory note e il limite della validazione
+CPU cloud già documentati, senza nuovi aggiornamenti forzati o risorse remote.
+
+`AGENTS.md` e `04-work-orders.md` ora impongono un solo agente esecutore e un
+solo task attivo, senza subagenti o deleghe parallele. Consegna ordinaria:
+verifiche e documentazione, commit con firma disabilitata, `git push origin develop`,
+verifica dello SHA remoto e della raggiungibilità da `origin/develop`.
+Blocchi o istruzioni esplicite contrarie vanno riportati; nessuna riscrittura
+della cronologia o operazione cloud è autorizzata dal solo push Git.
+
+La chiusura della consegna richiede la verifica Git finale descritta in AGENTS;
+il resoconto di consegna riporta SHA locale e remoto. TAV-MVP-03 non è stato avviato.
 
 ## Riferimenti
 
@@ -252,4 +305,5 @@ richiesto per questa consegna. Nessun push senza nuova autorizzazione.
 - [D1: migrazioni](https://developers.cloudflare.com/d1/reference/migrations/)
 - Schema e API Wrangler della versione installata sotto `node_modules/wrangler/`
 - [Qwik: request handling](https://qwik.dev/docs/advanced/request-handling/)
+- [Qwik: endpoints](https://qwik.dev/docs/endpoints/), con tipi e selezione handler verificati nella versione 1.20.0 installata
 - [Playwright: server di test](https://playwright.dev/docs/test-webserver)
