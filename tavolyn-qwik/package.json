@@ -19,18 +19,20 @@
     "dev:vite": "vite --mode ssr",
     "fmt": "prettier --write .",
     "fmt.check": "prettier --check .",
-    "lint": "eslint src tests scripts adapters vite.config.ts vitest.config.ts playwright.config.ts",
+    "lint": "eslint src tests scripts adapters vite.config.ts vitest.config.ts playwright.config.ts playwright.auth.config.ts",
     "preview": "wrangler dev --local --ip 127.0.0.1 --port 8787 --var LOCAL_DEMO_MODE:true --log-level warn",
     "history:backfill": "wrangler d1 execute DB --local --file migrations/0004_tracking_outbox.sql",
     "email:capture": "vite build --config scripts/email-sink.config.ts && node .wrangler/email-sink/capture.mjs",
     "db:migrate": "wrangler d1 migrations apply DB --local",
-    "db:seed": "wrangler d1 execute DB --local --file seeds/demo-tenants.sql && wrangler d1 execute DB --local --file seeds/demo-catalog.sql && wrangler d1 execute DB --local --file seeds/demo-checkout.sql",
+    "db:seed": "wrangler d1 execute DB --local --file seeds/demo-tenants.sql && wrangler d1 execute DB --local --file seeds/demo-catalog.sql && wrangler d1 execute DB --local --file seeds/demo-checkout.sql && wrangler d1 execute DB --local --file seeds/demo-staff.sql",
     "checkout:setup": "node scripts/setup-checkout.mjs",
     "db:setup": "npm run db:migrate && npm run db:seed",
     "test": "vitest run",
-    "test:browser": "playwright test",
+    "test:browser": "playwright test && npm run test:auth:browser",
     "benchmark": "node scripts/benchmark-worker.mjs",
-    "qwik": "qwik"
+    "qwik": "qwik",
+    "auth:preview": "vite build --config tests/oidc/harness.config.ts && node .wrangler/oidc-harness/start.mjs",
+    "test:auth:browser": "playwright test --config playwright.auth.config.ts"
   },
   "devDependencies": {
     "@builder.io/qwik": "1.20.0",
@@ -50,5 +52,8 @@
     "vitest": "4.1.12",
     "wrangler": "4.162.0",
     "ws": "8.21.0"
+  },
+  "dependencies": {
+    "oauth4webapi": "3.8.8"
   }
 }

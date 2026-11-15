@@ -1316,3 +1316,37 @@ summary:focus-visible {
     flex-wrap: wrap;
   }
 }
+:root .staff-login {
+  min-height: 100vh;
+}
+:root .login-main {
+  min-height: 65vh;
+  padding-block: 3rem 5rem;
+}
+:root .login-card {
+  max-width: 44rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border: 1px solid var(--accent);
+  border-radius: 1.5rem;
+  background: var(--surface);
+}
+:root .login-card h1 {
+  font-size: clamp(2rem, 6vw, 3.3rem);
+  line-height: 1.08;
+  margin-block: 1rem 1.5rem;
+}
+:root .login-card p {
+  line-height: 1.65;
+}
+:root .login-card .button {
+  margin-block: 1.2rem;
+}
+:root .login-notice {
+  padding: 1rem;
+  border-left: 3px solid var(--accent);
+  background: var(--paper);
+}
+:root .login-local {
+  font-size: 0.85rem;
+}

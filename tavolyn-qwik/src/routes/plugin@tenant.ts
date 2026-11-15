@@ -8,7 +8,10 @@ import {
 export const onRequest: RequestHandler = async (event) => {
   event.headers.set("Cache-Control", "no-store");
   event.headers.set("X-Content-Type-Options", "nosniff");
-  if (/^\/(?:api\/public\/)?orders\//.test(event.pathname)) {
+  if (
+    /^\/(?:api\/public\/)?orders\//.test(event.pathname) ||
+    /^\/(?:login(?:\/|$)|api\/(?:auth|staff)(?:\/|$))/.test(event.pathname)
+  ) {
     event.headers.set("Referrer-Policy", "no-referrer");
     event.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
   }

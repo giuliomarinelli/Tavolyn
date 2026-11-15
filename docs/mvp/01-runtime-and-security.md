@@ -67,7 +67,14 @@ Two seeded staff roles: OWNER and OPERATOR. Use explicit capabilities e.g. order
 - Session data and demo guest orders need a documented cleanup/retention policy.
 
 ## Secrets / deploy safety
-Expected configurable secrets: COGNITO_ISSUER, COGNITO_CLIENT_ID, relevant OIDC secret only if using a confidential client, SESSION_HMAC_KEY, SESSION_ENCRYPTION_KEY (if retaining IdP tokens), EMAIL_API_KEY, TURNSTILE_SECRET. Public vars: site origin(s), demo mode, email sending state; do not put secrets in client bundles or tracked .env files.
+TAV-MVP-06 implements provider-neutral public configuration `OIDC_ISSUER`,
+`OIDC_CLIENT_ID`, `OIDC_ALLOWED_ORIGINS`, private `AUTH_STATE_KEY` for encrypted
+five-minute login transactions, and optional private `OIDC_CLIENT_SECRET` for
+confidential clients. One-hour opaque sessions store only their SHA-256 hash;
+no provider tokens are retained, so no session-token encryption or HMAC key is
+required. See [auth implementation and manual Cognito setup](./TAV-MVP-06.md).
+Future email/anti-abuse secrets include `EMAIL_API_KEY` and `TURNSTILE_SECRET`.
+Never put secrets in client bundles, tracked vars or .env files.
 
 Implemented in TAV-MVP-04: `ORDER_TOKEN_KEY`, a private 256-bit HMAC key for
 reconstructing tracking tokens during an idempotent retry. Only token hashes and

@@ -4,8 +4,10 @@ Demo portfolio Qwik 1.20 / Qwik City su **un solo Cloudflare Worker**.
 Il workspace `tavolyn-qwik/` serve due ristoranti fittizi, **Trattoria Aurora** e
 **Nodo Pizza Lab**, leggendo configurazioni e hostname da una sola D1 condivisa.
 Sono implementati runtime, tenant, branding, catalogo, carrello e checkout ospite
-con ordini D1, tracking e riepiloghi email acquisibili solo localmente (TAV-MVP-01–05).
-Invio email reale e autenticazione restano ai task successivi. Tutti i pagamenti
+con ordini D1, tracking, riepiloghi email locali e autenticazione staff OIDC/PKCE
+con sessioni D1 (TAV-MVP-01–06). Cognito reale resta da configurare e verificare
+manualmente; i test usano un provider locale isolato. Invio email reale e gestione
+ordini staff restano ai task successivi. Tutti i pagamenti
 sono dimostrativi, senza addebiti reali.
 
 ## Installazione e avvio locale
@@ -38,6 +40,8 @@ Con Wrangler attivo:
 - `/checkout/` — preventivo autorevole, ritiro/consegna, pagamento simulato o contanti.
 - `POST /api/public/quote` e `POST /api/public/orders` — preventivo e ordine idempotente.
 - `/orders/:trackingToken/` e `GET /api/public/orders/:trackingToken` — stato e timeline riservati al possessore del collegamento.
+- `/login/` — accesso staff; senza configurazione OIDC mostra indisponibilità esplicita.
+- `GET /api/auth/login`, `GET /api/auth/callback`, `POST /api/auth/logout`, `GET /api/staff/me` — OIDC e sessioni staff.
 - <http://127.0.0.1:8787/api/health> — liveness indipendente da tenant e D1.
 
 Chromium risolve i nomi `.localhost` verso il loopback, senza DNS pubblico. In
@@ -71,11 +75,13 @@ navigazione, visibili solo in questa modalità.
 | `npm run history:backfill` | Ripete l'inizializzazione conservativa delle timeline; vecchie email soppresse |
 | `npm run email:capture -- --local --tenant aurora` | Acquisisce fino a 20 riepiloghi locali Aurora, senza invio reale; `nodo` per l'altro tenant |
 | `npm run cf-typegen`   | Rigenera `Env` dai binding Wrangler                                         |
+| `npm run auth:preview` | Provider OIDC fixture e stesso Worker su 8788 con D1 isolata; richiede build |
+| `npm run test:auth:browser` | Flussi browser OIDC su test harness locale, senza AWS; richiede build |
 | `npm run typecheck`    | TypeScript strict per sorgenti, configurazioni e test                       |
 | `npm run lint`         | ESLint per sorgenti, configurazioni e test                                  |
 | `npm run build`        | Build Qwik e bundle Wrangler in dry run, senza upload                       |
 | `npm test`             | Integrazione su Worker compilato e D1 isolata; richiede una build           |
-| `npm run test:browser` | Verifiche Chromium di homepage, menu e carrello; richiede build e Chromium |
+| `npm run test:browser` | Regressioni guest e login OIDC, in sequenza; richiede build e Chromium |
 | `npm run check`        | Typecheck, lint, build, integrazione e browser, in sequenza                 |
 | `npm run cf:dev`       | Build iniziale e avvio Wrangler locale con binding D1                       |
 | `npm run dev`          | Alias di `cf:dev`                                                           |
@@ -84,8 +90,10 @@ navigazione, visibili solo in questa modalità.
 | `npm run benchmark`    | Profiling locale sul preview già attivo                                     |
 
 `npm run check` avvia e arresta il proprio preview per i test browser, usando
-un solo processo di test. Prima fermare eventuali preview manuali sulla porta 8787. Il setup browser ripete `db:setup`, che conserva i dati già presenti.
-Le schermate e le trace rimangono in `.wrangler/browser-results/`, ignorata da Git.
+un solo worker di test. Prima fermare preview manuali sulle porte 8787/8788.
+Il setup browser guest ripete `db:setup`, che conserva i dati già presenti;
+il test OIDC usa un secondo avvio seriale con D1 separata. Schermate e trace
+private in `.wrangler/browser-results/` e `.wrangler/auth-browser-results/`, ignorate da Git.
 
 Per una modifica: fermare preview, eseguire `npm run check`, poi riavviare
 `npm run preview`. Non ricostruire `dist/` durante il profiling. Arrestare i server
@@ -105,7 +113,8 @@ Le pagine sono in `src/routes/`, gli endpoint in `src/routes/api/`, la logica
 server in `src/lib/server/` e i soli contratti pubblici in `src/lib/shared/`.
 Le future pagine gestionali potranno usare `src/routes/app/` nello stesso Worker.
 Il database è esposto a Qwik City come `RequestEvent.platform.env.DB`.
-`db:setup` applica quattro migrazioni (inclusa `0004_tracking_outbox.sql`) e i seed dei due menu e delle tariffe, senza eliminare
+`db:setup` applica cinque migrazioni (fino a `0005_staff_auth.sql`) e quattro seed
+di tenant, menu, tariffe e membership fittizie, senza eliminare
 righe o sovrascrivere modifiche esistenti. Su un database demo inizializzato:
 10 categorie, 27 prodotti, 19 gruppi modificatori e 56 modificatori.
 Il carrello conserva solo ID, selezioni e quantità in `localStorage`. Il checkout
@@ -122,6 +131,7 @@ ignorati da Git. Non sono email inviate. Gli ordini storici restano esclusi dall
 catture e da eventuali futuri invii. Consultare TAV-MVP-05 per ispezione e limiti.
 
 - [Specifiche MVP autorevoli](docs/mvp/README.md).
+- [TAV-MVP-06: OIDC, sessioni, fixture e checklist Cognito manuale](docs/mvp/TAV-MVP-06.md).
 - [TAV-MVP-05: tracking, timeline, outbox e sink locale](docs/mvp/TAV-MVP-05.md).
 - [TAV-MVP-04: checkout, atomicità, idempotenza e setup privato locale](docs/mvp/TAV-MVP-04.md).
 - [TAV-MVP-03: catalogo, API, carrello e verifiche](docs/mvp/TAV-MVP-03.md).

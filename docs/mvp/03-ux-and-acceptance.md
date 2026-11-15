@@ -29,6 +29,10 @@ orders. TAV-MVP-05 adds a private tracking link, persistent timeline and visible
 polling every eight seconds. Confirmation cache has no bearer; refresh the tracking
 URL directly. Email capture is local only; live sending and staff operations are
 deferred. See [tracking acceptance evidence](./TAV-MVP-05.md).
+TAV-MVP-06 implements tenant-branded `/login/`, configured-provider redirect,
+authorized/denied/expired/error states and logout. Unconfigured normal preview
+has no fixture login button; the OIDC provider exists only in the test harness.
+See [staff auth acceptance](./TAV-MVP-06.md). Staff order dashboards remain deferred.
 
 ## Core end-to-end scenario
 1. Open Aurora homepage; see Aurora branding.

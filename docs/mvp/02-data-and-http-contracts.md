@@ -11,8 +11,10 @@ Implemented in TAV-MVP-03: `categories`, `products`, `modifier_groups`, `modifie
 items/options with explicit availability. TAV-MVP-04 implements quotes, guest
 checkout, `tenant_checkout_settings`, `orders`, `order_items`, `order_access` and
 `idempotency_records`. TAV-MVP-05 implements tracking GET/page, `order_events` and
-`email_outbox`, including local capture only. Staff routes and live sending remain
-contracts for subsequent tasks. See [checkout](./TAV-MVP-04.md) and
+`email_outbox`, including local capture only. TAV-MVP-06 implements auth routes,
+`staff_memberships`, `app_sessions`, temporary encrypted login transactions and
+`GET /api/staff/me`. Staff order operations and live sending remain future contracts.
+See [OIDC/session contracts](./TAV-MVP-06.md), [checkout](./TAV-MVP-04.md) and
 [tracking/outbox contracts](./TAV-MVP-05.md).
 
 ## General rules
@@ -38,7 +40,8 @@ contracts for subsequent tasks. See [checkout](./TAV-MVP-04.md) and
 | order_items | Item price/config snapshots | tenant_id, id, order_id, product_id nullable, name_snapshot, qty, unit_price_cents, modifiers_snapshot_json, line_total_cents |
 | order_access | Guest tracking bearer secret hash | tenant_id, order_id, tracking_hash unique, created_at |
 | staff_memberships | Local authorization | tenant_id, cognito_sub, role, active |
-| app_sessions | Individual logged-in session | session_hash unique, cognito_sub, tenant_id, expires_at, created_at, revoked_at, encrypted_token_blob nullable |
+| app_sessions | Individual logged-in session | session_hash unique, cognito_sub, tenant_id, issuer, origin, expires_at, created_at, revoked_at; provider tokens not retained |
+| oidc_login_transactions | Five-minute, browser/tenant-bound, single-use OIDC correlation | state_hash, browser_hash, tenant_id, issuer, origin, client_id, redirect_uri, encrypted_state, created_at, expires_at |
 | order_events | Order timeline and auditable staff actions | tenant_id, id, order_id, actor_subject nullable, event_type, from_status nullable, to_status, created_at |
 | email_outbox | Durable request to send transactional order summary | tenant_id, id, order_id, type, status, attempts, created_at, sent_at nullable |
 | idempotency_records | Duplicate-order command protection | tenant_id, key_hash, operation, request_hash, response_json, created_at |

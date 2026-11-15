@@ -67,7 +67,12 @@ local private signing-key setup required for secure replay.
 TAV-MVP-05 adds bearer-protected tracking pages/API, persistent order events and
 an atomic email outbox. Only an explicit local capture adapter exists; no real
 email is sent, and historical requests are suppressed. See [tracking and local
-email capture](./TAV-MVP-05.md). Staff authentication/operations remain deferred.
+email capture](./TAV-MVP-05.md).
+
+TAV-MVP-06 adds provider-neutral OIDC code/PKCE, D1 sessions and staff membership
+authorization, `/login/` and `/api/staff/me`. Local tests use a signed fixture
+provider; real Cognito remains unconfigured/unverified. Staff order operations
+remain deferred. See [auth setup, tests and manual Cognito checklist](./TAV-MVP-06.md).
 
 ## Source references
 - Qwik Workers adapter: https://qwik.dev/docs/deployments/cloudflare-workers/

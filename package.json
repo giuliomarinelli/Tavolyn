@@ -22,7 +22,9 @@
     "db:migrate": "npm run db:migrate --workspace tavolyn-qwik",
     "db:seed": "npm run db:seed --workspace tavolyn-qwik",
     "db:setup": "npm run db:setup --workspace tavolyn-qwik",
-    "check": "npm run typecheck && npm run lint && npm run build && npm test && npm run test:browser"
+    "check": "npm run typecheck && npm run lint && npm run build && npm test && npm run test:browser",
+    "auth:preview": "npm run auth:preview --workspace tavolyn-qwik",
+    "test:auth:browser": "npm run test:auth:browser --workspace tavolyn-qwik"
   },
   "engines": {
     "node": "22.16.0",
