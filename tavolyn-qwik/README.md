@@ -13,6 +13,8 @@ Catalogo D1, modificatori e carrello client sono nel
 [runbook TAV-MVP-03](../docs/mvp/TAV-MVP-03.md).
 Checkout ospite, tariffe, chiave privata locale e ordini atomici sono nel
 [runbook TAV-MVP-04](../docs/mvp/TAV-MVP-04.md).
+Tracking, timeline e riepiloghi email senza invio reale sono nel
+[runbook TAV-MVP-05](../docs/mvp/TAV-MVP-05.md).
 
 Dentro questo workspace, dopo `npm ci` dalla radice:
 
@@ -31,9 +33,12 @@ rimane uno strumento HMR opzionale, non una verifica del runtime Workers.
 Non esistono preview server Node o backend separati da avviare.
 Le due homepage sono su `aurora.localhost:8787` e `nodo.localhost:8787`.
 Da entrambe si raggiungono `/menu/` e `/cart/`; `/api/public/menu` espone solo
-il catalogo del tenant risolto. `db:setup` applica tre migrazioni e tre seed non
+il catalogo del tenant risolto. `db:setup` applica quattro migrazioni e tre seed non
 distruttivi. `/checkout/` crea ordini D1 con pagamenti solo dimostrativi.
 Conservare `.dev.vars`: contiene `ORDER_TOKEN_KEY`, necessario ai replay sicuri;
 il comando di setup non sovrascrive un file privato esistente.
+La conferma collega a `/orders/:trackingToken/`. Dal workspace, una cattura
+esplicita usa `npm run email:capture -- --local --tenant aurora` (oppure `nodo`):
+file JSON privati in `.wrangler/email-previews/`, nessun invio o endpoint admin.
 `cf:dev` esegue build e Wrangler; `dev` è un suo alias. Vite viene usato durante
 la compilazione, mentre il runtime con i binding Cloudflare è workerd.

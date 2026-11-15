@@ -93,7 +93,9 @@ for (const slug of ["aurora", "nodo"]) {
       );
       expect(saved.includes(result.trackingToken)).toBe(false);
       expect(saved).not.toContain("ospite@example.test");
-      await expect(page.locator('a[href^="/orders/"]')).toHaveCount(0);
+      await expect(
+        page.getByRole("link", { name: "Segui il tuo ordine" }),
+      ).toHaveAttribute("href", `/orders/${result.trackingToken}/`);
       await page.screenshot({
         path: testInfo.outputPath("confirmation.png"),
         fullPage: true,
@@ -158,6 +160,10 @@ test("interrupted response survives refresh and replays the same committed order
   expect((await replayReady).status()).toBe(200);
   await expect(
     page.getByRole("heading", { name: `Conferma ${committedNumber}` }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Segui il tuo ordine" }).click();
+  await expect(
+    page.getByRole("heading", { name: committedNumber, exact: true }),
   ).toBeVisible();
 });
 

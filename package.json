@@ -5,6 +5,8 @@
     "tavolyn-qwik"
   ],
   "scripts": {
+    "history:backfill": "npm run history:backfill --workspace tavolyn-qwik",
+    "email:capture": "npm run email:capture --workspace tavolyn-qwik --",
     "checkout:setup": "npm run checkout:setup --workspace tavolyn-qwik",
     "dev": "npm run dev --workspace tavolyn-qwik",
     "cf:dev": "npm run cf:dev --workspace tavolyn-qwik",

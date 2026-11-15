@@ -25,9 +25,10 @@ Do not ship fake buttons or broken navigation. It is better to omit a section th
 
 Implemented through TAV-MVP-04: restaurant homepages, `/menu/`, `/cart/` and
 `/checkout/`. The cart links to server quotes and a guest checkout with actual D1
-orders. Confirmation is recoverable in the same browser tab; live tracking,
-timeline and email are deferred. No inert tracking links or real card fields.
-See [checkout acceptance evidence](./TAV-MVP-04.md).
+orders. TAV-MVP-05 adds a private tracking link, persistent timeline and visible-only
+polling every eight seconds. Confirmation cache has no bearer; refresh the tracking
+URL directly. Email capture is local only; live sending and staff operations are
+deferred. See [tracking acceptance evidence](./TAV-MVP-05.md).
 
 ## Core end-to-end scenario
 1. Open Aurora homepage; see Aurora branding.

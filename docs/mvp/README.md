@@ -61,9 +61,13 @@ See the [catalog and cart runbook](./TAV-MVP-03.md). Quote, checkout and orders
 are implemented in TAV-MVP-04; cart totals remain indicative until checkout.
 
 TAV-MVP-04 adds server-authoritative quotes, guest checkout, delivery fees,
-cash/mock payment and atomic idempotent D1 orders. Tracking pages, timeline and
-email remain deferred. See the [checkout runbook](./TAV-MVP-04.md), including the
+cash/mock payment and atomic idempotent D1 orders. See the [checkout runbook](./TAV-MVP-04.md), including the
 local private signing-key setup required for secure replay.
+
+TAV-MVP-05 adds bearer-protected tracking pages/API, persistent order events and
+an atomic email outbox. Only an explicit local capture adapter exists; no real
+email is sent, and historical requests are suppressed. See [tracking and local
+email capture](./TAV-MVP-05.md). Staff authentication/operations remain deferred.
 
 ## Source references
 - Qwik Workers adapter: https://qwik.dev/docs/deployments/cloudflare-workers/

@@ -43,6 +43,7 @@ beforeAll(async () => {
   await applySql(catalogSeed);
   await applySql(await readFile("migrations/0003_checkout.sql", "utf8"));
   await applySql(await readFile("seeds/demo-checkout.sql", "utf8"));
+  await applySql(await readFile("migrations/0004_tracking_outbox.sql", "utf8"));
 });
 
 afterAll(async () => {

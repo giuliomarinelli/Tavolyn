@@ -90,6 +90,8 @@ export const checkoutHandler = async (
         tenant.site.slug,
         tenant.site.currency,
         parseOrder(body),
+        tenant.site.name,
+        tenant.site.timezone,
       );
       status = created.replay ? 200 : 201;
       result = created.receipt;

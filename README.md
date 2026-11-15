@@ -4,8 +4,9 @@ Demo portfolio Qwik 1.20 / Qwik City su **un solo Cloudflare Worker**.
 Il workspace `tavolyn-qwik/` serve due ristoranti fittizi, **Trattoria Aurora** e
 **Nodo Pizza Lab**, leggendo configurazioni e hostname da una sola D1 condivisa.
 Sono implementati runtime, tenant, branding, catalogo, carrello e checkout ospite
-con ordini D1 (TAV-MVP-01/02/03/04). Tracking, email e autenticazione restano ai
-task successivi. Tutti i pagamenti sono dimostrativi, senza addebiti reali.
+con ordini D1, tracking e riepiloghi email acquisibili solo localmente (TAV-MVP-01–05).
+Invio email reale e autenticazione restano ai task successivi. Tutti i pagamenti
+sono dimostrativi, senza addebiti reali.
 
 ## Installazione e avvio locale
 
@@ -36,6 +37,7 @@ Con Wrangler attivo:
 - `/api/public/menu` — catalogo pubblico con prezzi in centesimi e disponibilità.
 - `/checkout/` — preventivo autorevole, ritiro/consegna, pagamento simulato o contanti.
 - `POST /api/public/quote` e `POST /api/public/orders` — preventivo e ordine idempotente.
+- `/orders/:trackingToken/` e `GET /api/public/orders/:trackingToken` — stato e timeline riservati al possessore del collegamento.
 - <http://127.0.0.1:8787/api/health> — liveness indipendente da tenant e D1.
 
 Chromium risolve i nomi `.localhost` verso il loopback, senza DNS pubblico. In
@@ -66,6 +68,8 @@ navigazione, visibili solo in questa modalità.
 | `npm run db:seed`      | Inserisce i fixture mancanti senza duplicare o sovrascrivere righe          |
 | `npm run db:setup`     | Migrazioni e seed locali, in sequenza                                       |
 | `npm run checkout:setup` | Crea la chiave privata locale se `.dev.vars` non esiste, senza stamparla |
+| `npm run history:backfill` | Ripete l'inizializzazione conservativa delle timeline; vecchie email soppresse |
+| `npm run email:capture -- --local --tenant aurora` | Acquisisce fino a 20 riepiloghi locali Aurora, senza invio reale; `nodo` per l'altro tenant |
 | `npm run cf-typegen`   | Rigenera `Env` dai binding Wrangler                                         |
 | `npm run typecheck`    | TypeScript strict per sorgenti, configurazioni e test                       |
 | `npm run lint`         | ESLint per sorgenti, configurazioni e test                                  |
@@ -101,7 +105,7 @@ Le pagine sono in `src/routes/`, gli endpoint in `src/routes/api/`, la logica
 server in `src/lib/server/` e i soli contratti pubblici in `src/lib/shared/`.
 Le future pagine gestionali potranno usare `src/routes/app/` nello stesso Worker.
 Il database è esposto a Qwik City come `RequestEvent.platform.env.DB`.
-`db:setup` applica anche `0002_catalog.sql`, `0003_checkout.sql` e i seed dei due menu e delle tariffe, senza eliminare
+`db:setup` applica quattro migrazioni (inclusa `0004_tracking_outbox.sql`) e i seed dei due menu e delle tariffe, senza eliminare
 righe o sovrascrivere modifiche esistenti. Su un database demo inizializzato:
 10 categorie, 27 prodotti, 19 gruppi modificatori e 56 modificatori.
 Il carrello conserva solo ID, selezioni e quantità in `localStorage`. Il checkout
@@ -110,8 +114,15 @@ La chiave `ORDER_TOKEN_KEY` resta in `tavolyn-qwik/.dev.vars`, ignorato da Git:
 non cancellarla o rigenerarla, perché serve a ricostruire i token nei retry.
 Se il file esiste già, `checkout:setup` lo conserva senza leggerlo o modificarlo;
 seguire il runbook TAV-MVP-04 per integrare una configurazione privata esistente.
+Il tracking si apre dalla conferma dell'ordine, anche dopo un replay, e si può
+ricaricare dal suo URL. Il token non è salvato nel browser: conserva privatamente
+il collegamento. I riepiloghi email locali sono file JSON in
+`tavolyn-qwik/.wrangler/email-previews/<tenant>/`, fuori dagli asset pubblici e
+ignorati da Git. Non sono email inviate. Gli ordini storici restano esclusi dalle
+catture e da eventuali futuri invii. Consultare TAV-MVP-05 per ispezione e limiti.
 
 - [Specifiche MVP autorevoli](docs/mvp/README.md).
+- [TAV-MVP-05: tracking, timeline, outbox e sink locale](docs/mvp/TAV-MVP-05.md).
 - [TAV-MVP-04: checkout, atomicità, idempotenza e setup privato locale](docs/mvp/TAV-MVP-04.md).
 - [TAV-MVP-03: catalogo, API, carrello e verifiche](docs/mvp/TAV-MVP-03.md).
 - [TAV-MVP-02: schema, tenancy, seed, prove e limiti](docs/mvp/TAV-MVP-02.md).

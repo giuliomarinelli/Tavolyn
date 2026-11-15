@@ -39,6 +39,7 @@ export default component$(() => {
   const cart = useCart();
   const quote = useSignal<Quote | null>(null);
   const receipt = useSignal<OrderReceipt | null>(null);
+  const tracking = useSignal("");
   const pending = useSignal("");
   const refresh = useSignal(0);
   const state = useStore({
@@ -219,9 +220,23 @@ export default component$(() => {
             </strong>
           </p>
           <p class="checkout-disclosure">
-            Nessun denaro addebitato. Nessuna email inviata. Il tracking sarà
-            disponibile in una fase successiva della demo.
+            Nessun denaro addebitato. Nessuna email inviata: il riepilogo è
+            predisposto soltanto per la verifica locale.
           </p>
+          {tracking.value ? (
+            <a
+              class="button button-primary"
+              href={`/orders/${encodeURIComponent(tracking.value)}/`}
+            >
+              Segui il tuo ordine
+            </a>
+          ) : (
+            <p class="checkout-disclosure">
+              Il collegamento riservato era disponibile alla conferma. Se hai
+              già aperto la pagina di tracking, puoi ricaricarla direttamente.
+              Questa copia del riepilogo non conserva quel collegamento.
+            </p>
+          )}
           <a class="text-link" href="/menu/">
             Torna al menu ↗
           </a>
@@ -321,6 +336,7 @@ export default component$(() => {
                 totalCents: body.totalCents,
                 quoteFingerprint: body.quoteFingerprint,
               };
+              tracking.value = body.trackingToken;
               receipt.value = confirmed;
               try {
                 sessionStorage.setItem(receiptKey, JSON.stringify(confirmed));

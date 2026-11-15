@@ -33,6 +33,8 @@ export const createOrder = async (
   slug: string,
   currency: string,
   input: OrderInput,
+  restaurantName: string,
+  timezone: string,
 ): Promise<{ receipt: OrderResponse; replay: boolean }> => {
   const keyHash = await digest(input.idempotencyKey);
   const requestHash = await digest(JSON.stringify(input));
@@ -147,6 +149,23 @@ export const createOrder = async (
         )
         .bind(tenantId, orderId, trackingHash, nonce, createdAt),
       // No ON CONFLICT ignore: a race must roll back EVERY preceding insert.
+      db
+        .prepare(
+          "INSERT INTO order_events (tenant_id,id,order_id,event_type,from_status,to_status,visibility,actor_subject,created_at) VALUES (?,?,?,'ORDER_CREATED',NULL,'NEW','PUBLIC',NULL,?)",
+        )
+        .bind(tenantId, crypto.randomUUID(), orderId, createdAt),
+      db
+        .prepare(
+          "INSERT INTO email_outbox (tenant_id,id,order_id,message_type,delivery_mode,status,attempts,restaurant_name_snapshot,timezone_snapshot,created_at,processed_at,error_code) VALUES (?,?,?,'ORDER_SUMMARY','LOCAL_ONLY','QUEUED',0,?,?,?,NULL,NULL)",
+        )
+        .bind(
+          tenantId,
+          crypto.randomUUID(),
+          orderId,
+          restaurantName,
+          timezone,
+          createdAt,
+        ),
       db
         .prepare(
           "INSERT INTO idempotency_records (tenant_id,operation,key_hash,request_hash,order_id,response_json,created_at) VALUES (?,'CREATE_ORDER',?,?,?,?,?)",

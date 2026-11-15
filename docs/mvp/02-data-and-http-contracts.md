@@ -10,8 +10,10 @@ Implemented in TAV-MVP-03: `categories`, `products`, `modifier_groups`, `modifie
 [catalog model and public DTO](./TAV-MVP-03.md). The menu includes unavailable
 items/options with explicit availability. TAV-MVP-04 implements quotes, guest
 checkout, `tenant_checkout_settings`, `orders`, `order_items`, `order_access` and
-`idempotency_records`. Tracking GET, events, outbox and staff routes remain
-contracts for subsequent tasks. See [the implemented checkout contract](./TAV-MVP-04.md).
+`idempotency_records`. TAV-MVP-05 implements tracking GET/page, `order_events` and
+`email_outbox`, including local capture only. Staff routes and live sending remain
+contracts for subsequent tasks. See [checkout](./TAV-MVP-04.md) and
+[tracking/outbox contracts](./TAV-MVP-05.md).
 
 ## General rules
 - One shared D1 database (SQLite); every restaurant-owned row has tenant_id.
@@ -127,7 +129,7 @@ Response example:
 ~~~json
 {
   "orderNumber":"A-001",
-  "trackingToken":"<opaque-secret; no tracking route implemented yet>",
+  "trackingToken":"<opaque-secret used only in memory or the tracking URL>",
   "status":"NEW",
   "paymentStatus":"PAID_SIMULATED",
   "totalCents":2100
@@ -137,7 +139,8 @@ Response example:
 ### Critical API behaviors
 - The TAV-MVP-04 response also includes the quoted item summary, currency, fee,
   payment method and UTC creation time. First success returns 201; replay 200.
-  No tracking link or email-queued claim is returned. Delivery requires address
+  The confirmation now links to `/orders/:trackingToken/` without saving the token
+  in browser storage. Outbox capture is not real delivery. Delivery requires address
   `{ street, city, postalCode }`. Stale quote fingerprint returns 409.
 - Quote ignores client prices, validates selected modifiers belong to products and selection constraints; checks sold-out flags.
 - Order create re-quotes on server; client total is never trusted. Different request with reused idempotency key -> conflict, exact retry -> same order result, no duplicated email.

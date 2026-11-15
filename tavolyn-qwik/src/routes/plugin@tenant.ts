@@ -8,6 +8,10 @@ import {
 export const onRequest: RequestHandler = async (event) => {
   event.headers.set("Cache-Control", "no-store");
   event.headers.set("X-Content-Type-Options", "nosniff");
+  if (/^\/(?:api\/public\/)?orders\//.test(event.pathname)) {
+    event.headers.set("Referrer-Policy", "no-referrer");
+    event.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+  }
   // Operational liveness is deliberately independent of tenancy and D1.
   if (/^\/api\/health\/?$/.test(event.pathname)) return;
 
@@ -34,6 +38,7 @@ export const onRequest: RequestHandler = async (event) => {
       "Configurazione del ristorante temporaneamente non disponibile",
     );
   }
-  if (!tenant) return fail(404, "TENANT_NOT_FOUND", "Ristorante non disponibile");
+  if (!tenant)
+    return fail(404, "TENANT_NOT_FOUND", "Ristorante non disponibile");
   setRequestTenant(event, tenant);
 };

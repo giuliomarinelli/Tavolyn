@@ -5,6 +5,113 @@
   line-height: 1.6;
   font-synthesis: none;
 }
+.tracking-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: center;
+  padding: 2rem;
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  margin-bottom: 3rem;
+}
+.tracking-status h2 {
+  font:
+    400 clamp(1.6rem, 3vw, 2.5rem) Georgia,
+    serif;
+  margin-block: 0.6rem;
+  overflow-wrap: anywhere;
+}
+.tracking-status p {
+  font-size: 0.8rem;
+}
+.tracking-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--paper);
+  padding: 0.6rem 1.1rem;
+  border-radius: 2rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.tracking-updated {
+  margin-top: 1rem;
+}
+.tracking-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+.tracking-timeline h2 {
+  font:
+    400 2rem/1.2 Georgia,
+    serif;
+  margin-block: 1rem 2rem;
+}
+.tracking-timeline ol {
+  padding: 0;
+  margin: 0 0 2rem;
+  list-style: none;
+}
+.tracking-timeline li {
+  display: flex;
+  position: relative;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+.tracking-timeline li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 0.8rem;
+  bottom: -0.3rem;
+  left: 0.35rem;
+  width: 1px;
+  background: var(--accent);
+}
+.timeline-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-top: 0.45rem;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.tracking-timeline time {
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 0.35rem;
+}
+.tracking-connection,
+.tracking-privacy {
+  font-size: 0.75rem;
+  margin-top: 1rem;
+  max-width: 70ch;
+}
+.tracking-privacy {
+  border-top: 1px solid color-mix(in srgb, var(--ink) 25%, transparent);
+  padding-top: 1.5rem;
+  margin-top: 3rem;
+}
+[data-brand="nodo"] .tracking-status h2,
+[data-brand="nodo"] .tracking-timeline h2 {
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+@media (max-width: 640px) {
+  .tracking-status {
+    flex-direction: column;
+    align-items: start;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .tracking-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
 * {
   box-sizing: border-box;
 }
