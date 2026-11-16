@@ -24,7 +24,8 @@
     "db:setup": "npm run db:setup --workspace tavolyn-qwik",
     "check": "npm run typecheck && npm run lint && npm run build && npm test && npm run test:browser",
     "auth:preview": "npm run auth:preview --workspace tavolyn-qwik",
-    "test:auth:browser": "npm run test:auth:browser --workspace tavolyn-qwik"
+    "test:auth:browser": "npm run test:auth:browser --workspace tavolyn-qwik",
+    "auth:setup-local": "npm run auth:setup-local --workspace tavolyn-qwik --"
   },
   "engines": {
     "node": "22.16.0",

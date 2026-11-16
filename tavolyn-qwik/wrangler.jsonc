@@ -5,7 +5,7 @@
   "compatibility_date": "2026-11-15",
   "compatibility_flags": ["nodejs_compat"],
   "send_metrics": false,
-  "secrets": { "required": ["ORDER_TOKEN_KEY"] },
+  "secrets": { "required": ["ORDER_TOKEN_KEY", "AUTH_STATE_KEY"] },
   "vars": {
     "LOCAL_DEMO_MODE": "false",
     "OIDC_ISSUER": "",

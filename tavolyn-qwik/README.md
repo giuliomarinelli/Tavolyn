@@ -17,6 +17,8 @@ Tracking, timeline e riepiloghi email senza invio reale sono nel
 [runbook TAV-MVP-05](../docs/mvp/TAV-MVP-05.md).
 OIDC staff, sessioni D1 e provider fixture senza AWS sono nel
 [runbook TAV-MVP-06](../docs/mvp/TAV-MVP-06.md).
+Il collegamento locale al Cognito esistente, con valori personali esclusi da Git,
+è descritto nel [follow-up locale](../docs/mvp/TAV-MVP-06-cognito-local.md).
 
 Dentro questo workspace, dopo `npm ci` dalla radice:
 

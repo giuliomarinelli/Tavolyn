@@ -71,7 +71,9 @@ email capture](./TAV-MVP-05.md).
 
 TAV-MVP-06 adds provider-neutral OIDC code/PKCE, D1 sessions and staff membership
 authorization, `/login/` and `/api/staff/me`. Local tests use a signed fixture
-provider; real Cognito remains unconfigured/unverified. Staff order operations
+provider. A [local real-Cognito follow-up](./TAV-MVP-06-cognito-local.md) documents
+private configuration, discovery and login-start verification; personal browser
+sign-in and the real token exchange remain unverified. Staff order operations
 remain deferred. See [auth setup, tests and manual Cognito checklist](./TAV-MVP-06.md).
 
 ## Source references

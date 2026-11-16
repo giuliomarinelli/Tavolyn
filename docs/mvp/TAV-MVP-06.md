@@ -1,5 +1,9 @@
 # TAV-MVP-06 — OIDC staff e sessioni D1, validazione locale
 
+Follow-up del 16 novembre 2026: [collegamento locale al pool Cognito esistente](./TAV-MVP-06-cognito-local.md),
+configurazione privata e membership personale locale. Non modifica il flusso OIDC
+implementato qui; la verifica personale nel browser rimane distinta dai test automatici.
+
 ## Perimetro e architettura
 
 Base `bc21aa0727e014482fbd6bb9a940789e94b78527`, `develop` inizialmente pulito
@@ -66,10 +70,14 @@ Le variabili base sono vuote: il normale `npm run dev` mostra il login indisponi
 | `AUTH_STATE_KEY` | Segreto privato casuale: 32 byte, 64 caratteri hex; non inserire in `vars` versionate |
 | `OIDC_CLIENT_SECRET` | Segreto privato opzionale, solo per client confidential; HTTP Basic al token endpoint |
 
-I nomi opzionali dei segreti sono tipizzati in `AuthEnv`; i binding e le variabili
-pubbliche restano generati con `cf-typegen`. Non sono duplicati binding D1/ASSETS.
+Dal follow-up locale `AUTH_STATE_KEY` è dichiarata in `secrets.required` e nei
+tipi generati, così Wrangler la carica realmente. `OIDC_CLIENT_SECRET` rimane
+opzionale in `AuthEnv`; un suo eventuale uso richiede anche una dichiarazione di
+caricamento Wrangler. Binding e variabili sono generati con `cf-typegen`, senza
+duplicare D1/ASSETS.
 Manca un segreto richiesto dalla configurazione OIDC: fail closed 503.
-Non si leggono né sovrascrivono `.dev.vars` o chiavi degli ordini esistenti.
+Il setup iniziale conserva file privati preesistenti; il follow-up locale aggiorna
+solo la configurazione OIDC autorizzata e preserva la chiave degli ordini.
 
 1. Il resolver D1 esistente risolve l'hostname della Request. Query, header
    proxy, cookie e body non selezionano il tenant.

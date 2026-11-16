@@ -32,7 +32,8 @@
     "benchmark": "node scripts/benchmark-worker.mjs",
     "qwik": "qwik",
     "auth:preview": "vite build --config tests/oidc/harness.config.ts && node .wrangler/oidc-harness/start.mjs",
-    "test:auth:browser": "playwright test --config playwright.auth.config.ts"
+    "test:auth:browser": "playwright test --config playwright.auth.config.ts",
+    "auth:setup-local": "node scripts/setup-local-oidc.mjs"
   },
   "devDependencies": {
     "@builder.io/qwik": "1.20.0",

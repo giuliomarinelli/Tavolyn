@@ -5,8 +5,9 @@ Il workspace `tavolyn-qwik/` serve due ristoranti fittizi, **Trattoria Aurora** 
 **Nodo Pizza Lab**, leggendo configurazioni e hostname da una sola D1 condivisa.
 Sono implementati runtime, tenant, branding, catalogo, carrello e checkout ospite
 con ordini D1, tracking, riepiloghi email locali e autenticazione staff OIDC/PKCE
-con sessioni D1 (TAV-MVP-01–06). Cognito reale resta da configurare e verificare
-manualmente; i test usano un provider locale isolato. Invio email reale e gestione
+con sessioni D1 (TAV-MVP-01–06). Cognito reale può essere collegato localmente con
+[configurazione privata](docs/mvp/TAV-MVP-06-cognito-local.md); il login personale
+richiede verifica manuale nel browser. I test usano un provider locale isolato. Invio email reale e gestione
 ordini staff restano ai task successivi. Tutti i pagamenti
 sono dimostrativi, senza addebiti reali.
 
@@ -76,6 +77,7 @@ navigazione, visibili solo in questa modalità.
 | `npm run email:capture -- --local --tenant aurora` | Acquisisce fino a 20 riepiloghi locali Aurora, senza invio reale; `nodo` per l'altro tenant |
 | `npm run cf-typegen`   | Rigenera `Env` dai binding Wrangler                                         |
 | `npm run auth:preview` | Provider OIDC fixture e stesso Worker su 8788 con D1 isolata; richiede build |
+| `npm run auth:setup-local -- .wrangler/local-cognito.json` | Configurazione OIDC e membership da input privato, solo D1 locale; conserva chiavi/fixture |
 | `npm run test:auth:browser` | Flussi browser OIDC su test harness locale, senza AWS; richiede build |
 | `npm run typecheck`    | TypeScript strict per sorgenti, configurazioni e test                       |
 | `npm run lint`         | ESLint per sorgenti, configurazioni e test                                  |
